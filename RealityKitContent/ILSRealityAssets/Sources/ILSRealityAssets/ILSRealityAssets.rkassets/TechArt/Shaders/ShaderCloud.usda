@@ -1,0 +1,475 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "Reality Composer Pro Version 2.0 (474)"
+    }
+    defaultPrim = "Root"
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Material "ShaderCloud"
+{
+    asset inputs:AoMap (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-695.33936, 256.6403)
+                int stackingOrderInSubgraph = 718
+            }
+        }
+    )
+    float inputs:backEdgeInset = 0.2 (
+        colorSpace = ""
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-1010.5314, 764.7432)
+                int stackingOrderInSubgraph = 4013
+            }
+        }
+    )
+    float inputs:bottomEdgeInset = 0.2 (
+        colorSpace = ""
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-1018.1344, 704.363)
+                int stackingOrderInSubgraph = 4013
+            }
+        }
+    )
+    color3f inputs:CloudBaseColor = (0.4904652, 0.4904652, 0.4904652) (
+        colorSpace = "srgb_displayp3"
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-200.37772, 245.71466)
+                int stackingOrderInSubgraph = 953
+            }
+        }
+    )
+    color3f inputs:CloudEmissiveColor = (0.92546237, 0.9696853, 1) (
+        colorSpace = "srgb_displayp3"
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-201.18826, 314.33792)
+                int stackingOrderInSubgraph = 948
+            }
+        }
+    )
+    float inputs:CloudRoughness = 1 (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-166.9756, 93.2099)
+                int stackingOrderInSubgraph = 912
+            }
+        }
+    )
+    float inputs:leadingEdgeInset = 0.2 (
+        colorSpace = ""
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-1020.312, 644.83295)
+                int stackingOrderInSubgraph = 4013
+            }
+        }
+    )
+    float3 inputs:maxContentBounds = (0.2, 0.2, 0.2) (
+        colorSpace = ""
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-932.2678, 991.7718)
+                int stackingOrderInSubgraph = 4013
+            }
+        }
+    )
+    float3 inputs:minContentBounds = (-0.2, -0.2, -0.2) (
+        colorSpace = ""
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-940.688, 836.91046)
+                int stackingOrderInSubgraph = 4013
+            }
+        }
+    )
+    asset inputs:NormalMap (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-1260.5531, -123.31856)
+                int stackingOrderInSubgraph = 680
+            }
+        }
+    )
+    float3 inputs:sceneViewCenter = (0, 0, -0.2) (
+        colorSpace = ""
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-1211.6401, 966.59106)
+                int stackingOrderInSubgraph = 4013
+            }
+        }
+    )
+    asset inputs:ThicknessMap (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-749.5586, -542.0542)
+                int stackingOrderInSubgraph = 746
+            }
+        }
+    )
+    float inputs:topEdgeInset = 0.2 (
+        colorSpace = ""
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-1029.337, 1110.0017)
+                int stackingOrderInSubgraph = 4013
+            }
+        }
+    )
+    float inputs:trailingEdgeInset = 0.2 (
+        colorSpace = ""
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-1041.3441, 1051.3544)
+                int stackingOrderInSubgraph = 4013
+            }
+        }
+    )
+    token outputs:mtlx:surface.connect = </ShaderCloud/PreviewSurface.outputs:out>
+    token outputs:realitykit:vertex
+    float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (1056.6713, 286.2033)
+    int ui:nodegraph:realitykit:subgraphOutputs:stackingOrder = 936
+
+    def Shader "PBRSurface"
+    {
+        uniform token info:id = "ND_realitykit_pbr_surfaceshader"
+        float inputs:ambientOcclusion.connect = None
+        color3f inputs:baseColor.connect = </ShaderCloud.inputs:CloudBaseColor>
+        float inputs:clearcoat
+        float3 inputs:clearcoatNormal
+        float inputs:clearcoatRoughness
+        color3f inputs:emissiveColor.connect = </ShaderCloud/Combine3.outputs:out>
+        bool inputs:hasPremultipliedAlpha
+        float inputs:metallic
+        float3 inputs:normal.connect = </ShaderCloud/NormalMapDecode.outputs:out>
+        float inputs:opacity
+        float inputs:opacityThreshold
+        float inputs:roughness = 1
+        float inputs:roughness.connect = </ShaderCloud.inputs:CloudRoughness>
+        float inputs:specular
+        token outputs:out
+        float2 ui:nodegraph:node:pos = (452.61465, -30.564856)
+        int ui:nodegraph:node:stackingOrder = 944
+    }
+
+    def Shader "Image2D"
+    {
+        uniform token info:id = "ND_RealityKitTexture2D_vector4"
+        asset inputs:file.connect = </ShaderCloud.inputs:AoMap>
+        bool inputs:no_flip_v = 1
+        int2 inputs:offset
+        float4 outputs:out
+        float2 ui:nodegraph:node:pos = (-491.64014, 377.8317)
+        int ui:nodegraph:node:stackingOrder = 718
+    }
+
+    def Shader "Separate4"
+    {
+        uniform token info:id = "ND_separate4_vector4"
+        float4 inputs:in.connect = </ShaderCloud/Image2D.outputs:out>
+        float outputs:outw
+        float outputs:outx
+        float outputs:outy
+        float outputs:outz
+        float2 ui:nodegraph:node:pos = (-270.75732, 479.2731)
+        int ui:nodegraph:node:stackingOrder = 718
+    }
+
+    def Shader "Image2D_1"
+    {
+        uniform token info:id = "ND_RealityKitTexture2D_vector4"
+        string inputs:border_color
+        asset inputs:file.connect = </ShaderCloud.inputs:ThicknessMap>
+        string inputs:mag_filter
+        int inputs:max_anisotropy
+        float inputs:max_lod_clamp
+        string inputs:min_filter
+        string inputs:mip_filter
+        bool inputs:no_flip_v = 1
+        int2 inputs:offset
+        string inputs:u_wrap_mode
+        string inputs:v_wrap_mode
+        float4 outputs:out
+        float2 ui:nodegraph:node:pos = (-494.82562, -420.45044)
+        int ui:nodegraph:node:stackingOrder = 743
+    }
+
+    def Shader "Separate4_1"
+    {
+        uniform token info:id = "ND_separate4_vector4"
+        float4 inputs:in.connect = </ShaderCloud/Image2D_1.outputs:out>
+        float outputs:outx
+        float outputs:outy
+        float outputs:outz
+        float2 ui:nodegraph:node:pos = (-273.9886, -278.59686)
+        int ui:nodegraph:node:stackingOrder = 743
+    }
+
+    def Shader "Image2D_2"
+    {
+        uniform token info:id = "ND_RealityKitTexture2D_vector4"
+        float inputs:bias
+        string inputs:border_color
+        float4 inputs:default
+        float inputs:dynamic_min_lod_clamp
+        asset inputs:file.connect = </ShaderCloud.inputs:NormalMap>
+        string inputs:mag_filter
+        int inputs:max_anisotropy
+        float inputs:max_lod_clamp
+        string inputs:min_filter
+        float inputs:min_lod_clamp
+        string inputs:mip_filter
+        bool inputs:no_flip_v = 1
+        int2 inputs:offset
+        float2 inputs:texcoord
+        string inputs:u_wrap_mode
+        string inputs:v_wrap_mode
+        float4 outputs:out
+        float2 ui:nodegraph:node:pos = (-1006.81256, -1.531782)
+        int ui:nodegraph:node:stackingOrder = 680
+    }
+
+    def Shader "Convert"
+    {
+        uniform token info:id = "ND_convert_vector4_vector3"
+        prepend float4 inputs:in.connect = </ShaderCloud/Image2D_2.outputs:out>
+        float3 outputs:out
+        float2 ui:nodegraph:node:pos = (-754.7363, 38.173145)
+        int ui:nodegraph:node:stackingOrder = 680
+    }
+
+    def Shader "NormalMapDecode"
+    {
+        uniform token info:id = "ND_normal_map_decode"
+        float3 inputs:in.connect = </ShaderCloud/Convert.outputs:out>
+        float3 outputs:out
+        float2 ui:nodegraph:node:pos = (-558.68896, 39.056507)
+        int ui:nodegraph:node:stackingOrder = 680
+    }
+
+    def Shader "Combine3"
+    {
+        uniform token info:id = "ND_combine3_color3"
+        float inputs:in1.connect = </ShaderCloud/Separate4.outputs:outx>
+        float inputs:in2.connect = </ShaderCloud/Separate4.outputs:outx>
+        float inputs:in3.connect = </ShaderCloud/Separate4.outputs:outx>
+        color3f outputs:out
+        float2 ui:nodegraph:node:pos = (-42.64291, 488.14587)
+        int ui:nodegraph:node:stackingOrder = 770
+    }
+
+    def Shader "PreviewSurface"
+    {
+        uniform token info:id = "ND_UsdPreviewSurface_surfaceshader"
+        float inputs:clearcoat
+        float inputs:clearcoatRoughness
+        color3f inputs:diffuseColor = (0.48628828, 0.4250055, 0.3623385) (
+            colorSpace = "srgb_displayp3"
+        )
+        color3f inputs:diffuseColor.connect = </ShaderCloud.inputs:CloudBaseColor>
+        color3f inputs:emissiveColor.connect = </ShaderCloud/Multiply.outputs:out>
+        float inputs:ior
+        float inputs:metallic = 1
+        float3 inputs:normal.connect = </ShaderCloud/NormalMapDecode.outputs:out>
+        float inputs:occlusion.connect = </ShaderCloud/Separate4.outputs:outx>
+        float inputs:opacity.connect = </ShaderCloud/Oneminus.outputs:out>
+        float inputs:opacityThreshold
+        float inputs:roughness = 1
+        float inputs:roughness.connect = None
+        token outputs:out
+        float2 ui:nodegraph:node:pos = (683.29645, 363.48526)
+        int ui:nodegraph:node:stackingOrder = 938
+        string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["Advanced"]
+    }
+
+    def Shader "Multiply_1"
+    {
+        uniform token info:id = "ND_multiply_color3"
+        color3f inputs:in1.connect = </ShaderCloud/Combine3.outputs:out>
+        color3f outputs:out
+        float2 ui:nodegraph:node:pos = (126.87782, 605.1027)
+        int ui:nodegraph:node:stackingOrder = 780
+    }
+
+    def Shader "Multiply"
+    {
+        uniform token info:id = "ND_multiply_color3"
+        color3f inputs:in1.connect = </ShaderCloud/Mix.outputs:out>
+        color3f inputs:in2 = (0.92546237, 0.9696853, 1) (
+            colorSpace = "srgb_displayp3"
+        )
+        color3f inputs:in2.connect = </ShaderCloud.inputs:CloudEmissiveColor>
+        color3f outputs:out
+        float2 ui:nodegraph:node:pos = (369.64987, 375.05844)
+        int ui:nodegraph:node:stackingOrder = 949
+    }
+
+    def Shader "Mix"
+    {
+        uniform token info:id = "ND_mix_color3"
+        color3f inputs:bg = (0.5463834, 0.5369837, 0.74708015) (
+            colorSpace = "srgb_displayp3"
+        )
+        color3f inputs:bg.connect = None
+        color3f inputs:fg = (1, 1, 1) (
+            colorSpace = "srgb_displayp3"
+        )
+        float inputs:mix.connect = </ShaderCloud/Separate4.outputs:outx>
+        color3f outputs:out
+        float2 ui:nodegraph:node:pos = (143.26402, 336.01477)
+        int ui:nodegraph:node:stackingOrder = 933
+    }
+
+    def Shader "Separate3"
+    {
+        uniform token info:id = "ND_separate3_vector3"
+        float3 inputs:in.connect = </ShaderCloud/Max.outputs:out>
+        float outputs:outx
+        float outputs:outy
+        float outputs:outz
+        float2 ui:nodegraph:node:pos = (-67.7346, 986.48035)
+        int ui:nodegraph:node:stackingOrder = 4013
+    }
+
+    def Shader "Divide_1"
+    {
+        uniform token info:id = "ND_divide_vector3"
+        float3 inputs:in1.connect = </ShaderCloud/Subtract_2.outputs:out>
+        float3 inputs:in2.connect = </ShaderCloud/MinInsets.outputs:out>
+        float3 outputs:out
+        float2 ui:nodegraph:node:pos = (-627.2418, 901.7133)
+        int ui:nodegraph:node:stackingOrder = 4013
+    }
+
+    def Shader "Divide_2"
+    {
+        uniform token info:id = "ND_divide_vector3"
+        float3 inputs:in1.connect = </ShaderCloud/Subtract_3.outputs:out>
+        float3 inputs:in2.connect = </ShaderCloud/MaxInsets.outputs:out>
+        float3 outputs:out
+        float2 ui:nodegraph:node:pos = (-626.2937, 961.94135)
+        int ui:nodegraph:node:stackingOrder = 4013
+    }
+
+    def Shader "Subtract_3"
+    {
+        uniform token info:id = "ND_subtract_vector3"
+        float3 inputs:in1.connect = </ShaderCloud/Subtract.outputs:out>
+        float3 inputs:in2.connect = </ShaderCloud.inputs:maxContentBounds>
+        float3 outputs:out
+        float2 ui:nodegraph:node:pos = (-742.5314, 954.8204)
+        int ui:nodegraph:node:stackingOrder = 4013
+    }
+
+    def Shader "Subtract_2"
+    {
+        uniform token info:id = "ND_subtract_vector3"
+        float3 inputs:in1.connect = </ShaderCloud.inputs:minContentBounds>
+        float3 inputs:in2.connect = </ShaderCloud/Subtract.outputs:out>
+        float3 outputs:out
+        float2 ui:nodegraph:node:pos = (-739.74756, 896.12067)
+        int ui:nodegraph:node:stackingOrder = 4013
+    }
+
+    def Shader "Max"
+    {
+        uniform token info:id = "ND_max_vector3"
+        float3 inputs:in1.connect = </ShaderCloud/ClampMin01.outputs:out>
+        float3 inputs:in2.connect = </ShaderCloud/ClampMax01.outputs:out>
+        float3 outputs:out
+        float2 ui:nodegraph:node:pos = (-243.42227, 983.0404)
+        int ui:nodegraph:node:stackingOrder = 4013
+    }
+
+    def Shader "Position"
+    {
+        uniform token info:id = "ND_position_vector3"
+        string inputs:space = "world"
+        float3 outputs:out
+        float2 ui:nodegraph:node:pos = (-1234.0282, 919.2942)
+        int ui:nodegraph:node:stackingOrder = 4013
+    }
+
+    def Shader "MTLMax3"
+    {
+        uniform token info:id = "ND_MTL_max3_float"
+        float inputs:x.connect = </ShaderCloud/Separate3.outputs:outx>
+        float inputs:y.connect = </ShaderCloud/Separate3.outputs:outy>
+        float inputs:z.connect = </ShaderCloud/Separate3.outputs:outz>
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (134.66867, 975.5509)
+        int ui:nodegraph:node:stackingOrder = 4013
+    }
+
+    def Shader "ClampMin01"
+    {
+        uniform token info:id = "ND_clamp_vector3"
+        float3 inputs:high
+        float3 inputs:in.connect = </ShaderCloud/Divide_1.outputs:out>
+        float3 inputs:low = (0, 0, 0)
+        float3 outputs:out
+        float2 ui:nodegraph:node:pos = (-437.18442, 854.21783)
+        int ui:nodegraph:node:stackingOrder = 4013
+    }
+
+    def Shader "MaxInsets"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </ShaderCloud.inputs:trailingEdgeInset>
+        float inputs:in2.connect = </ShaderCloud.inputs:topEdgeInset>
+        float inputs:in3 = 0
+        float3 outputs:out
+        float2 ui:nodegraph:node:pos = (-812.09937, 1129.7238)
+        int ui:nodegraph:node:stackingOrder = 4013
+    }
+
+    def Shader "Oneminus"
+    {
+        uniform token info:id = "ND_realitykit_oneminus_float"
+        float inputs:in.connect = </ShaderCloud/MTLMax3.outputs:out>
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (252.79434, 1032.4838)
+        int ui:nodegraph:node:stackingOrder = 4013
+    }
+
+    def Shader "MinInsets"
+    {
+        uniform token info:id = "ND_combine3_vector3"
+        float inputs:in1.connect = </ShaderCloud.inputs:leadingEdgeInset>
+        float inputs:in2.connect = </ShaderCloud.inputs:bottomEdgeInset>
+        float inputs:in3.connect = </ShaderCloud.inputs:backEdgeInset>
+        float3 outputs:out
+        float2 ui:nodegraph:node:pos = (-779.70483, 723.686)
+        int ui:nodegraph:node:stackingOrder = 4013
+    }
+
+    def Shader "ClampMax01"
+    {
+        uniform token info:id = "ND_clamp_vector3"
+        float3 inputs:high
+        float3 inputs:in.connect = </ShaderCloud/Divide_2.outputs:out>
+        float3 inputs:low
+        float3 outputs:out
+        float2 ui:nodegraph:node:pos = (-438.36142, 1014.5701)
+        int ui:nodegraph:node:stackingOrder = 4013
+    }
+
+    def Shader "Subtract"
+    {
+        uniform token info:id = "ND_subtract_vector3"
+        float3 inputs:in1.connect = </ShaderCloud/Position.outputs:out>
+        float3 inputs:in2 = (0, 0, 0.47058824)
+        float3 inputs:in2.connect = </ShaderCloud.inputs:sceneViewCenter>
+        float3 outputs:out
+        float2 ui:nodegraph:node:pos = (-1007.4557, 932.76843)
+        int ui:nodegraph:node:stackingOrder = 4013
+    }
+}
+

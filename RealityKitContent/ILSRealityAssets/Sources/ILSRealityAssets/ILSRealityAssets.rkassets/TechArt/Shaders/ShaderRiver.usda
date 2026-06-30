@@ -1,0 +1,381 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "Reality Composer Pro Version 2.0 (448.0.16.0.3)"
+    }
+    defaultPrim = ""
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Material "ShaderRiver"
+{
+    asset inputs:flow1 (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-949.17267, 298.60794)
+                int stackingOrderInSubgraph = 1143
+            }
+        }
+    )
+    float2 inputs:flowScale1 = (0, 0) (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-1119.0042, 485.53653)
+                int stackingOrderInSubgraph = 1143
+            }
+        }
+    )
+    float inputs:flowSpeed1 = 1 (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-1420.0598, 391.5987)
+                int stackingOrderInSubgraph = 1143
+            }
+        }
+    )
+    float inputs:flowStrength1 = 0 (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-462.5003, 525.4327)
+                int stackingOrderInSubgraph = 1143
+            }
+        }
+    )
+    asset inputs:normal1 (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (774.0929, 482.73865)
+                int stackingOrderInSubgraph = 1563
+            }
+        }
+    )
+    float2 inputs:normalScale1 = (0, 0) (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (526.1236, 766.9149)
+                int stackingOrderInSubgraph = 1563
+            }
+        }
+    )
+    float inputs:normalSpeed1 = 0 (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (101.934326, 761.1555)
+                int stackingOrderInSubgraph = 1563
+            }
+        }
+    )
+    float inputs:normalStrength1 = 0 (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (1253.55, 711.20374)
+                int stackingOrderInSubgraph = 1563
+            }
+        }
+    )
+    token outputs:mtlx:surface.connect = </ShaderRiver/PBRSurface.outputs:out>
+    token outputs:realitykit:vertex
+    float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (2245.768, 653.1172)
+    int ui:nodegraph:realitykit:subgraphOutputs:stackingOrder = 1607
+
+    def Shader "TextureCoordinates"
+    {
+        uniform token info:id = "ND_texcoord_vector2"
+        float2 outputs:out
+        float2 ui:nodegraph:node:pos = (-1181.2615, 341.07785)
+        int ui:nodegraph:node:stackingOrder = 1143
+    }
+
+    def Shader "Add"
+    {
+        uniform token info:id = "ND_add_vector2"
+        float2 inputs:in1.connect = </ShaderRiver/TextureCoordinates.outputs:out>
+        float2 inputs:in2.connect = </ShaderRiver/Combine2.outputs:out>
+        float2 outputs:out
+        float2 ui:nodegraph:node:pos = (-1015.58734, 375.50095)
+        int ui:nodegraph:node:stackingOrder = 1143
+    }
+
+    def Shader "Multiply_1"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </ShaderRiver.inputs:flowSpeed1>
+        float inputs:in2.connect = </ShaderRiver/Time.outputs:out>
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (-1295.4739, 422.43658)
+        int ui:nodegraph:node:stackingOrder = 1143
+    }
+
+    def Shader "Time"
+    {
+        uniform token info:id = "ND_time_float"
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (-1415.0168, 455.03033)
+        int ui:nodegraph:node:stackingOrder = 1143
+    }
+
+    def Shader "Combine2"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = None
+        float inputs:in2.connect = </ShaderRiver/Multiply_1.outputs:out>
+        float2 outputs:out
+        float2 ui:nodegraph:node:pos = (-1151.5337, 412.41846)
+        int ui:nodegraph:node:stackingOrder = 1143
+        string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["inputs:in2"]
+    }
+
+    def Shader "Image"
+    {
+        uniform token info:id = "ND_image_vector4"
+        float4 inputs:default
+        asset inputs:file = @../Textures/River/ganges_river_pebbles_nor_gl_1k.exr@
+        asset inputs:file.connect = </ShaderRiver.inputs:flow1>
+        string inputs:filtertype
+        float2 inputs:texcoord.connect = </ShaderRiver/Multiply_2.outputs:out>
+        string inputs:uaddressmode
+        string inputs:vaddressmode
+        float4 outputs:out
+        float2 ui:nodegraph:node:pos = (-729.14417, 353.92816)
+        int ui:nodegraph:node:stackingOrder = 1143
+    }
+
+    def Shader "Separate4"
+    {
+        uniform token info:id = "ND_separate4_vector4"
+        float4 inputs:in.connect = </ShaderRiver/Image.outputs:out>
+        float outputs:outx
+        float outputs:outy
+        float outputs:outz
+        float2 ui:nodegraph:node:pos = (-496.20508, 423.1457)
+        int ui:nodegraph:node:stackingOrder = 1143
+    }
+
+    def Shader "Combine2_1"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = </ShaderRiver/Separate4.outputs:outx>
+        float inputs:in2.connect = </ShaderRiver/Separate4.outputs:outy>
+        float2 outputs:out
+        float2 ui:nodegraph:node:pos = (-322.77283, 404.44363)
+        int ui:nodegraph:node:stackingOrder = 1143
+        string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["outputs:out"]
+    }
+
+    def Shader "Remap"
+    {
+        uniform token info:id = "ND_remap_vector2FA"
+        float2 inputs:in.connect = </ShaderRiver/Combine2_1.outputs:out>
+        float inputs:inhigh
+        float inputs:inlow
+        float inputs:outhigh.connect = </ShaderRiver.inputs:flowStrength1>
+        float inputs:outlow.connect = </ShaderRiver/Multiply_3.outputs:out>
+        float2 outputs:out
+        float2 ui:nodegraph:node:pos = (-154.83994, 474.9818)
+        int ui:nodegraph:node:stackingOrder = 1143
+    }
+
+    def Shader "Multiply_3"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </ShaderRiver.inputs:flowStrength1>
+        float inputs:in2 = -1
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (-313.2517, 490.7151)
+        int ui:nodegraph:node:stackingOrder = 1143
+    }
+
+    def Shader "Time_1"
+    {
+        uniform token info:id = "ND_time_float"
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (113.17761, 677.28217)
+        int ui:nodegraph:node:stackingOrder = 1563
+    }
+
+    def Shader "Multiply_5"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </ShaderRiver/Time_1.outputs:out>
+        float inputs:in2.connect = </ShaderRiver.inputs:normalSpeed1>
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (264.09674, 707.6881)
+        int ui:nodegraph:node:stackingOrder = 1563
+    }
+
+    def Shader "Combine2_2"
+    {
+        uniform token info:id = "ND_combine2_vector2"
+        float inputs:in1.connect = None
+        float inputs:in2.connect = </ShaderRiver/Multiply_5.outputs:out>
+        float2 outputs:out
+        float2 ui:nodegraph:node:pos = (428.17477, 697.8939)
+        int ui:nodegraph:node:stackingOrder = 1563
+    }
+
+    def Shader "Add_1"
+    {
+        uniform token info:id = "ND_add_vector2"
+        float2 inputs:in1.connect = </ShaderRiver/TextureCoordinates_1.outputs:out>
+        float2 inputs:in2.connect = </ShaderRiver/Combine2_2.outputs:out>
+        float2 outputs:out
+        float2 ui:nodegraph:node:pos = (573.3296, 651.7681)
+        int ui:nodegraph:node:stackingOrder = 1563
+    }
+
+    def Shader "Add_2"
+    {
+        uniform token info:id = "ND_add_vector2"
+        float2 inputs:in1.connect = </ShaderRiver/Remap.outputs:out>
+        float2 inputs:in2.connect = </ShaderRiver/Multiply_6.outputs:out>
+        float2 outputs:out
+        float2 ui:nodegraph:node:pos = (804.77496, 551.3361)
+        int ui:nodegraph:node:stackingOrder = 1563
+    }
+
+    def Shader "Image_1"
+    {
+        uniform token info:id = "ND_image_vector3"
+        float3 inputs:default
+        asset inputs:file.connect = </ShaderRiver.inputs:normal1>
+        string inputs:filtertype
+        float2 inputs:texcoord.connect = </ShaderRiver/Add_2.outputs:out>
+        string inputs:uaddressmode
+        string inputs:vaddressmode
+        float3 outputs:out
+        float2 ui:nodegraph:node:pos = (1002.2667, 546.7585)
+        int ui:nodegraph:node:stackingOrder = 1564
+    }
+
+    def Shader "NormalMapDecode"
+    {
+        uniform token info:id = "ND_normal_map_decode"
+        float3 inputs:in.connect = </ShaderRiver/Image_1.outputs:out>
+        float3 outputs:out
+        float2 ui:nodegraph:node:pos = (1251.7952, 615.2875)
+        int ui:nodegraph:node:stackingOrder = 1563
+    }
+
+    def Shader "Multiply_2"
+    {
+        uniform token info:id = "ND_multiply_vector2"
+        float2 inputs:in1.connect = </ShaderRiver/Add.outputs:out>
+        float2 inputs:in2.connect = </ShaderRiver.inputs:flowScale1>
+        float2 outputs:out
+        float2 ui:nodegraph:node:pos = (-912.55634, 383.55078)
+        int ui:nodegraph:node:stackingOrder = 1143
+        string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["inputs:in2"]
+    }
+
+    def Shader "Multiply_6"
+    {
+        uniform token info:id = "ND_multiply_vector2"
+        float2 inputs:in1.connect = </ShaderRiver/Add_1.outputs:out>
+        float2 inputs:in2.connect = </ShaderRiver.inputs:normalScale1>
+        float2 outputs:out
+        float2 ui:nodegraph:node:pos = (664.1947, 701.30054)
+        int ui:nodegraph:node:stackingOrder = 1563
+    }
+
+    def Shader "Mix"
+    {
+        uniform token info:id = "ND_mix_vector3"
+        float3 inputs:bg = (0, 0, 1)
+        float3 inputs:fg.connect = </ShaderRiver/NormalMapDecode.outputs:out>
+        float inputs:mix.connect = </ShaderRiver.inputs:normalStrength1>
+        float3 outputs:out
+        float2 ui:nodegraph:node:pos = (1494.8982, 653.96704)
+        int ui:nodegraph:node:stackingOrder = 1597
+    }
+
+    def Shader "TextureCoordinates_1"
+    {
+        uniform token info:id = "ND_texcoord_vector2"
+        float2 outputs:out
+        float2 ui:nodegraph:node:pos = (397.53894, 630.2489)
+        int ui:nodegraph:node:stackingOrder = 1563
+    }
+
+    def Scope "Group" (
+        kind = "group"
+    )
+    {
+        string ui:group:annotation = "compute flowmap UV offset"
+        string ui:group:annotationDescription = ""
+        string[] ui:group:members = ["p:Image", "p:Remap", "p:Combine2_1", "p:TextureCoordinates", "i:inputs:flowSpeed1", "p:Multiply_2", "p:Separate4", "p:Add", "p:Combine2", "i:inputs:flow1", "p:Multiply_3", "p:Multiply_1", "i:inputs:flowStrength1", "p:Time", "i:inputs:flowScale1"]
+    }
+
+    def Scope "Group2" (
+        kind = "group"
+    )
+    {
+        string ui:group:annotation = "compute surface normal"
+        string ui:group:annotationDescription = ""
+        string[] ui:group:members = ["i:inputs:normalSpeed1", "p:TextureCoordinates_1", "p:NormalMapDecode", "i:inputs:normalStrength1", "p:Mix", "p:Time_1", "p:Multiply_6", "p:Add_2", "p:Combine2_2", "p:Add_1", "p:Multiply_5", "i:inputs:normalScale1", "i:inputs:normal1", "p:Image_1"]
+    }
+
+    def Shader "Dot"
+    {
+        uniform token info:id = "ND_dot_float"
+        float inputs:in.connect = </ShaderRiver/Image_2.outputs:out>
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (1579.2109, 897.22003)
+        int ui:nodegraph:node:stackingOrder = 1664
+    }
+
+    def Shader "PrimvarReader"
+    {
+        uniform token info:id = "ND_UsdPrimvarReader_vector2"
+        float2 inputs:fallback
+        string inputs:varname = "uv2"
+        float2 outputs:out
+        float2 ui:nodegraph:node:pos = (1188.226, 1043.0092)
+        int ui:nodegraph:node:stackingOrder = 1664
+    }
+
+    def Shader "Image_2"
+    {
+        uniform token info:id = "ND_image_float"
+        asset inputs:file = @../Textures/River/RiverMask.png@
+        string inputs:filtertype
+        float2 inputs:texcoord.connect = </ShaderRiver/PrimvarReader.outputs:out>
+        string inputs:vaddressmode
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (1410.3759, 1082.636)
+        int ui:nodegraph:node:stackingOrder = 1664
+    }
+
+    def Shader "PBRSurface"
+    {
+        uniform token info:id = "ND_realitykit_pbr_surfaceshader"
+        float inputs:ambientOcclusion.connect = </ShaderRiver/Dot.outputs:out>
+        color3f inputs:baseColor = (0, 0, 0) (
+            colorSpace = "lin_srgb"
+        )
+        float inputs:clearcoat
+        float3 inputs:clearcoatNormal
+        color3f inputs:emissiveColor
+        bool inputs:hasPremultipliedAlpha = 1
+        float inputs:metallic
+        float3 inputs:normal.connect = </ShaderRiver/Mix.outputs:out>
+        float inputs:opacity = 0
+        float inputs:opacityThreshold
+        float inputs:roughness = 0
+        float inputs:roughness.connect = None
+        float inputs:specular.connect = </ShaderRiver/Dot.outputs:out>
+        token outputs:out
+        float2 ui:nodegraph:node:pos = (1988.9855, 766.903)
+        int ui:nodegraph:node:stackingOrder = 1605
+    }
+
+    def Scope "Group3" (
+        kind = "group"
+    )
+    {
+        string ui:group:annotation = "sample mask texture with uv2"
+        string ui:group:annotationDescription = ""
+        string[] ui:group:members = ["p:Dot", "p:PrimvarReader", "p:Image_2"]
+    }
+}
+

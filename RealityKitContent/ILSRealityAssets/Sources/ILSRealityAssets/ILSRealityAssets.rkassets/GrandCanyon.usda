@@ -1,0 +1,1530 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "Reality Composer Pro Version 2.0 (464)"
+    }
+    defaultPrim = "Root"
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "Root"
+{
+    reorder nameChildren = ["Geo", "Materials", "ImageBasedLight", "ImageBasedLightReceiver", "EnvironmentLightingConfiguration", "Meta", "mtl_Trailhead", "mtl_Hiker_Standing", "mtl_Hiker_Sitting", "mtl_Hiker_Walking", "mtl_Hiker_Bench", "mtl_Hiker_Locator"]
+    float3 xformOp:translate = (0, 0, 0)
+    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+    def Scope "Geo" (
+        active = true
+    )
+    {
+        reorder nameChildren = ["CanyonTransform", "Scope"]
+        def Xform "CanyonTransform" (
+            active = true
+            prepend apiSchemas = ["MaterialBindingAPI"]
+            customData = {
+                float3 rotationEulerHint = (0, 3.1415927, 0)
+            }
+        )
+        {
+            reorder nameChildren = ["LightSetup", "Terrain", "anim_bird_a_loop", "HikerTransform", "Cloud_C", "FogOnSide", "RealityKitContent_TimeOfDayMaterialComponent", "InfoMarkers", "TrailHeads", "FX"]
+            quatf xformOp:orient = (-4.371139e-8, 0, 1, 0)
+            float3 xformOp:scale = (1.383, 1.383, 1.383)
+            float3 xformOp:translate = (0, 0, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            def Xform "HikerTransform" (
+                active = true
+                customData = {
+                    float3 rotationEulerHint = (0, 0, 0)
+                }
+            )
+            {
+                reorder nameChildren = ["anim_hikers_e", "anim_hikers_d"]
+                quatf xformOp:orient = (1, 0, 0, 0)
+                float3 xformOp:scale = (0.01, 0.01, 0.01)
+                float3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                def "anim_hikers_e" (
+                    active = true
+                    references = @TechArt/Geometry/anim_hikers_e.usd@
+                )
+                {
+                    over "walking_mov_loc" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </Root/Materials/Hiker/mtl_Hiker_Walk> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                        float3 xformOp:scale = (0.7, 0.7, 0.7)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                        over "walking_offset_loc"
+                        {
+                            over "walking_mesh" (
+                                prepend apiSchemas = ["MaterialBindingAPI"]
+                            )
+                            {
+                                rel material:binding = None (
+                                    bindMaterialAs = "weakerThanDescendants"
+                                )
+                            }
+                        }
+                    }
+
+                    over "sitting_mov_loc" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = None (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                        float3 xformOp:scale = (0.7, 0.7, 0.7)
+                        float3 xformOp:translate = (0, 0, 0)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                        over "sitting_offset_loc"
+                        {
+                            over "sitting_mesh" (
+                                prepend apiSchemas = ["MaterialBindingAPI"]
+                            )
+                            {
+                                rel material:binding = </Root/Materials/Hiker/mtl_Hiker_Sit> (
+                                    bindMaterialAs = "weakerThanDescendants"
+                                )
+                            }
+
+                            over "sitting_bench_mesh" (
+                                prepend apiSchemas = ["MaterialBindingAPI"]
+                            )
+                            {
+                                rel material:binding = </Root/Materials/Hiker/mtl_Hiker_Bench> (
+                                    bindMaterialAs = "weakerThanDescendants"
+                                )
+                            }
+                        }
+                    }
+
+                    over "standing_mov_loc" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </Root/Materials/Hiker/mtl_Hiker_Stand> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                        float3 xformOp:scale = (0.7, 0.7, 0.7)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                        over "standing_offset_loc"
+                        {
+                            over "standing_mesh" (
+                                prepend apiSchemas = ["MaterialBindingAPI"]
+                            )
+                            {
+                                rel material:binding = None (
+                                    bindMaterialAs = "weakerThanDescendants"
+                                )
+                            }
+                        }
+                    }
+
+                    over "location_indicator_mov_loc" (
+                        active = false
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </Root/Materials/Hiker/mtl_Hiker_Locator> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                        quatf xformOp:orient = (1, 0, 0, 0)
+                        float3 xformOp:scale = (0.5, 0.5, 0.5)
+                        double3 xformOp:translate = (3.552713678800501e-15, 0.5, -1.4210854715202004e-14)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                        over "location_indicator_offset_loc"
+                        {
+                            over "location_indicator_mesh" (
+                                prepend apiSchemas = ["MaterialBindingAPI"]
+                            )
+                            {
+                                rel material:binding = None (
+                                    bindMaterialAs = "weakerThanDescendants"
+                                )
+                                float3 xformOp:translate = (0, 0, 0)
+                                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                            }
+                        }
+                    }
+
+                    over "Looks"
+                    {
+                        over "hiker_sitting_bench_matSG"
+                        {
+                            token outputs:mtlx:surface
+                            token outputs:realitykit:vertex
+
+                            over "hiker_sitting_bench_mat"
+                            {
+                                color3f inputs:emissiveColor = (0, 0, 0) (
+                                    colorSpace = "srgb_displayp3"
+                                )
+                            }
+                        }
+
+                        over "stops_mat1SG"
+                        {
+                            token outputs:mtlx:surface
+                            token outputs:realitykit:vertex
+                        }
+                    }
+                }
+            }
+
+            def "Terrain" (
+                active = true
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                references = @TechArt/Geometry/Terrain.usd@</Geometry>
+            )
+            {
+                rel material:binding = None (
+                    bindMaterialAs = "strongerThanDescendants"
+                )
+                quatf xformOp:orient = (1, 0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                over "Trail" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </Root/Materials/mtl_Trail> (
+                        bindMaterialAs = "strongerThanDescendants"
+                    )
+
+                    over "Solid" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </Root/Shaders/Trail_Solid> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "Dotted" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </Root/Shaders/Trail_Dotted> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "Trail_Spheres" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = None (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "Trail_Line" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = None (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+                }
+
+                over "Canyon"
+                {
+                    over "mesh_0" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </Root/Shaders/Canyon_0> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "mesh_1" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </Root/Shaders/Canyon_1> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "mesh_2" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </Root/Shaders/Canyon_2> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "canyon_mesh_0" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </Root/Materials/Canyon/mtl_Canyon_0> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "canyon_mesh_2" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </Root/Materials/Canyon/mtl_Canyon_2_Sides> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+
+                        def RealityKitComponent "GroundingShadow"
+                        {
+                            bool enableIBLShadow = 1
+                            bool enableMeshShadow = 1
+                            bool enableReceiveIBLShadow = 0
+                            bool enableReceiveMeshShadow = 0
+                            uniform token info:id = "RealityKit.GroundingShadow"
+                        }
+
+                        def RealityKitComponent "EnvironmentLightingConfiguration"
+                        {
+                            float environmentLightingWeight = 1
+                            uniform token info:id = "RealityKit.EnvironmentLightingConfiguration"
+                        }
+
+                        def RealityKitComponent "ImageBasedLight"
+                        {
+                            asset ibl = @TechArt/IBL/klippad_sunrise_2_4k.exr@
+                            uniform token info:id = "RealityKit.ImageBasedLight"
+                            float intensityExponent = 0.002651301
+                            bool isGlobalIBL = 0
+                        }
+
+                        def RealityKitComponent "ImageBasedLightReceiver"
+                        {
+                            rel iblEntity = </Root/Geo/CanyonTransform/Terrain/Canyon/canyon_mesh_2>
+                            uniform token info:id = "RealityKit.ImageBasedLightReceiver"
+                        }
+                    }
+
+                    over "canyon_mesh_1" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </Root/Materials/Canyon/mtl_Canyon_1> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "canyon_mesh_0_riverbed" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </Root/Materials/Canyon/mtl_Canyon_0_Riverbed> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+                }
+
+                over "River" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </Root/Materials/mtl_River> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                    float3 xformOp:translate = (0, 0, 0)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                    over "river_mesh"
+                    {
+                        float3 xformOp:translate = (0, 0, 0)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                        def RealityKitComponent "MeshSorting"
+                        {
+                            rel group = </Root/Meta/Model_Sorting_Group>
+                            token info:id = "RealityKit.MeshSorting"
+                            int priorityInGroup = 1
+                        }
+                    }
+                }
+
+                over "TrailSolid" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </Root/Shaders/Trail_Solid> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "TrailDotted" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </Root/Shaders/Trail_Dotted> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "FogBox" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </Root/Materials/mtl_Fog> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+            }
+
+            def RealityKitCustomComponent "RealityKitContent_TimeOfDayMaterialComponent"
+            {
+                float3 cloudColor0 = (0, 0.0070999814, 0.036350526)
+                float3 cloudColor1 = (0, 0, 0)
+                float3 cloudColor2 = (0, 0.0070999814, 0.036350526)
+                float3 cloudColor3 = (0, 0.0070999814, 0.036350526)
+                float3 cloudColor4 = (0, 0.0070999814, 0.036350526)
+                float3 cloudColor5 = (0, 0.0070999814, 0.036350526)
+                float3 cloudColor6 = (0, 0.0070999814, 0.036350526)
+                float3 cloudColor7 = (0, 0.0070999814, 0.036350526)
+                float3 fogColorLower0 = (0.051805582, 0.09089102, 0.18474878)
+                float3 fogColorLower1 = (0.052951317, 0.08988418, 0.18366668)
+                float3 fogColorLower2 = (0.052951317, 0.08988418, 0.18366668)
+                float3 fogColorLower3 = (0.052951317, 0.08988418, 0.18366668)
+                float3 fogColorLower4 = (0.052951317, 0.08988418, 0.18366668)
+                float3 fogColorLower5 = (0.052951317, 0.08988418, 0.18366668)
+                float3 fogColorLower6 = (0.052951317, 0.08988418, 0.18366668)
+                float3 fogColorLower7 = (0.052951317, 0.08988418, 0.18366668)
+                float3 fogColorSide0 = (0.07368004, 0.1366787, 0.28163362)
+                float3 fogColorSide1 = (0.07283964, 0.13779368, 0.280203)
+                float3 fogColorSide2 = (0.07283964, 0.13779368, 0.280203)
+                float3 fogColorSide3 = (0.07283964, 0.13779368, 0.280203)
+                float3 fogColorSide4 = (0.07283964, 0.13779368, 0.280203)
+                float3 fogColorSide5 = (0.07283964, 0.13779368, 0.280203)
+                float3 fogColorSide6 = (0.07283964, 0.13779368, 0.280203)
+                float3 fogColorSide7 = (0.07283964, 0.13779368, 0.280203)
+                float3 fogColorUpper0 = (0, 0, 0)
+                float3 fogColorUpper1 = (0, 0, 0)
+                float3 fogColorUpper2 = (0, 0, 0)
+                float3 fogColorUpper3 = (0, 0, 0)
+                float3 fogColorUpper4 = (0, 0, 0)
+                float3 fogColorUpper5 = (0, 0, 0)
+                float3 fogColorUpper6 = (0, 0, 0)
+                float3 fogColorUpper7 = (0, 0, 0)
+                float fogOpacitySide0 = 0.5
+                float fogOpacitySide1 = 0.5
+                float fogOpacitySide2 = 1
+                float fogOpacitySide3 = 1
+                float fogOpacitySide4 = 1
+                float fogOpacitySide5 = 1
+                float fogOpacitySide6 = 1
+                float fogOpacitySide7 = 1
+                uniform token info:id = "RealityKitContent.TimeOfDayMaterialComponent"
+                int numberOfColorsInUse = 8
+                float3 overheadCloudBaseColor0 = (0.53955525, 0.8529002, 1)
+                float3 overheadCloudBaseColor1 = (1, 0.781834, 0)
+                float3 overheadCloudBaseColor2 = (1, 0.781834, 0)
+                float3 overheadCloudBaseColor3 = (0.21293145, 0.14894593, 0.10276214)
+                float3 overheadCloudBaseColor4 = (0.21293145, 0.14894593, 0.10276214)
+                float3 overheadCloudBaseColor5 = (1, 0.781834, 0)
+                float3 overheadCloudBaseColor6 = (1, 0.781834, 0)
+                float3 overheadCloudBaseColor7 = (0.53955525, 0.8529002, 1)
+                float3 overheadCloudEmissiveColor0 = (0.19537285, 0.3588617, 0.749003)
+                float3 overheadCloudEmissiveColor1 = (0.2555305, 0.16509365, 0.52458984)
+                float3 overheadCloudEmissiveColor2 = (0.2555305, 0.16509365, 0.52458984)
+                float3 overheadCloudEmissiveColor3 = (0.81766224, 0.936364, 1)
+                float3 overheadCloudEmissiveColor4 = (0.81766224, 0.936364, 1)
+                float3 overheadCloudEmissiveColor5 = (0.2555305, 0.16509365, 0.52458984)
+                float3 overheadCloudEmissiveColor6 = (0.2555305, 0.16509365, 0.52458984)
+                float3 overheadCloudEmissiveColor7 = (0.19537285, 0.3588617, 0.749003)
+                float time0 = 0
+                float time1 = 0.22
+                float time2 = 0.3
+                float time3 = 0.4
+                float time4 = 0.6
+                float time5 = 0.7
+                float time6 = 0.78
+                float time7 = 0.823
+                float timeOfDay = 0
+            }
+
+            def Xform "LightSetup" (
+                active = true
+                customData = {
+                    float3 rotationEulerHint = (4.3976303e-8, 3.6574107e-8, 0.43078434)
+                }
+            )
+            {
+                reorder nameChildren = ["EarthRotate", "Sky"]
+                float2 ui:nodegraph:node:pos = (20, 20)
+                int ui:nodegraph:node:stackingOrder = 1
+                quatf xformOp:orient = (0.97689265, 1.7571562e-8, 2.2564027e-8, 0.21373054)
+                float3 xformOp:scale = (1, 1, 1)
+                float3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                def Xform "EarthRotate" (
+                    active = true
+                    customData = {
+                        float3 rotationEulerHint = (1.8545674e-7, 1.4210855e-14, -1.7300967)
+                    }
+                )
+                {
+                    reorder nameChildren = ["SunDistance", "MoonDistance", "Moon"]
+                    quatf xformOp:orient = (0.6486033, 6.014393e-8, -7.0578025e-8, -0.76112664)
+                    float3 xformOp:scale = (1, 1, 1)
+                    float3 xformOp:translate = (0, 0, 0)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                    def Xform "SunDistance" (
+                        active = true
+                    )
+                    {
+                        reorder nameChildren = ["SunLightsGroup", "MoonDistance"]
+                        float3 xformOp:scale = (1, 1, 1)
+                        float3 xformOp:translate = (-1.2925698, 0, 0.15905915)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                        def Xform "SunLightsGroup" (
+                            active = true
+                            customData = {
+                                float3 rotationEulerHint = (0, -1.4660767, 0)
+                            }
+                        )
+                        {
+                            reorder nameChildren = ["Sun", "PreSun", "PostSun", "Cone"]
+                            quatf xformOp:orient = (0.7431448, 0, -0.6691306, 0)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                            def Xform "Sun" (
+                                customData = {
+                                    float3 rotationEulerHint = (-2.6590794e-8, 0, 4.163114e-8)
+                                }
+                            )
+                            {
+                                reorder nameChildren = ["SpotLight", "RealityKitContent_TimeOfDayLightComponent", "Capsule"]
+                                quatf xformOp:orient = (1, -1.3295396e-8, -2.7675123e-16, 2.081557e-8)
+                                float3 xformOp:scale = (1.0000001, 1.0000002, 1.0000001)
+                                float3 xformOp:translate = (1.1920929e-7, 1.8964101e-9, 0)
+                                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                                def RealityKitComponent "SpotLight"
+                                {
+                                    float3 color = (0.90297806, 0.7714529, 0.7569847)
+                                    token info:id = "RealityKit.SpotLight"
+                                    float innerAngle = 40
+                                    float intensity = 40740.938
+                                    float outerAngle = 80
+
+                                    def RealityKitStruct "Shadow"
+                                    {
+                                        token cullMode = "None"
+                                        float depthBias = 1
+                                        bool isEnabled = 1
+                                        token zFar = "Fixed"
+                                        float zFarValue = 3
+                                        token zNear = "Fixed"
+                                    }
+                                }
+
+                                def RealityKitCustomComponent "RealityKitContent_TimeOfDayLightComponent"
+                                {
+                                    float3 color0 = (0, 0, 0)
+                                    float3 color1 = (1, 0.3439665, 0.15716757)
+                                    float3 color2 = (0.9951369, 0.34463984, 0.15654327)
+                                    float3 color3 = (0.90799606, 0.77006257, 0.7534053)
+                                    float3 color4 = (0.90297806, 0.7714529, 0.7569847)
+                                    float3 color5 = (0.97151476, 0.22414052, 0.133677)
+                                    float3 color6 = (0.9951369, 0.34463984, 0.15654327)
+                                    float3 color7 = (0, 0, 0)
+                                    uniform token info:id = "RealityKitContent.TimeOfDayLightComponent"
+                                    float intensity0 = 40740.938
+                                    float intensity1 = 40740.938
+                                    float intensity2 = 40740.938
+                                    float intensity3 = 40740.938
+                                    float intensity4 = 40740.938
+                                    float intensity5 = 40740.938
+                                    float intensity6 = 40740.938
+                                    float intensity7 = 40740.938
+                                    float time0 = 0.2
+                                    float time1 = 0.22
+                                    float time2 = 0.3
+                                    float time3 = 0.4
+                                    float time4 = 0.6
+                                    float time5 = 0.7
+                                    float time6 = 0.78
+                                    float time7 = 0.8229
+                                    float timeOfDay = 0
+                                }
+                            }
+
+                            def Xform "PreSun" (
+                                customData = {
+                                    float3 rotationEulerHint = (0.17453292, 1.1580707e-7, -5.3740525e-8)
+                                }
+                            )
+                            {
+                                quatf xformOp:orient = (0.9961947, 0.087155744, 5.5341296e-8, -3.1814636e-8)
+                                float3 xformOp:scale = (1, 1, 1)
+                                float3 xformOp:translate = (-4.0233135e-7, -0.2, -0.0000032186508)
+                                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                                def RealityKitComponent "DirectionalLight"
+                                {
+                                    float3 color = (1, 0.04650831, 0)
+                                    token info:id = "RealityKit.DirectionalLight"
+                                    float intensity = 545.708
+
+                                    def RealityKitStruct "Shadow"
+                                    {
+                                        bool isEnabled = 0
+                                    }
+                                }
+
+                                def RealityKitCustomComponent "RealityKitContent_TimeOfDayLightComponent"
+                                {
+                                    float3 color0 = (0, 0, 0)
+                                    float3 color1 = (1, 0.046084724, 0)
+                                    float3 color2 = (1, 0.04650831, 0)
+                                    float3 color3 = (0.36303237, 0.47562182, 0.86759263)
+                                    float3 color4 = (0.36303237, 0.47562182, 0.86759263)
+                                    float3 color5 = (1, 0.046084724, 0)
+                                    float3 color6 = (1, 0.046084724, 0)
+                                    float3 color7 = (0, 0, 0)
+                                    uniform token info:id = "RealityKitContent.TimeOfDayLightComponent"
+                                    float intensity0 = 545.708
+                                    float intensity1 = 545.708
+                                    float intensity2 = 545.708
+                                    float intensity3 = 545.708
+                                    float intensity4 = 545.708
+                                    float intensity5 = 545.708
+                                    float intensity6 = 545.708
+                                    float intensity7 = 545.708
+                                    float time1 = 0.22
+                                    float time2 = 0.3
+                                    float time3 = 0.4
+                                    float time4 = 0.6
+                                    float time5 = 0.7
+                                    float time6 = 0.78
+                                    float time7 = 0.823
+                                }
+                            }
+
+                            def Xform "PostSun" (
+                                customData = {
+                                    float3 rotationEulerHint = (-0.34906584, -5.6843426e-14, -0.000003608558)
+                                }
+                            )
+                            {
+                                float2 ui:nodegraph:node:pos = (20, 20)
+                                int ui:nodegraph:node:stackingOrder = 1
+                                quatf xformOp:orient = (0.9848077, -0.17364818, 3.1330976e-7, -0.000001776868)
+                                float3 xformOp:scale = (0.9999999, 0.99999976, 0.9999998)
+                                float3 xformOp:translate = (0, 0.2, 0)
+                                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                                def RealityKitComponent "DirectionalLight"
+                                {
+                                    float3 color = (0.24020466, 0.4580317, 0.9994554)
+                                    token info:id = "RealityKit.DirectionalLight"
+                                    float intensity = 345.708
+
+                                    def RealityKitStruct "Shadow"
+                                    {
+                                    }
+                                }
+
+                                def RealityKitCustomComponent "RealityKitContent_TimeOfDayLightComponent"
+                                {
+                                    float3 color0 = (0, 0, 0)
+                                    float3 color1 = (0.24063659, 0.45581338, 1)
+                                    float3 color2 = (0.24063659, 0.45581338, 1)
+                                    float3 color3 = (1, 0.62812966, 0.66788054)
+                                    float3 color4 = (0.99592626, 0.625285, 0.67012566)
+                                    float3 color5 = (1, 0.001672267, 0.041825928)
+                                    float3 color6 = (1, 0.14863208, 0.5080746)
+                                    float3 color7 = (0, 0, 0)
+                                    uniform token info:id = "RealityKitContent.TimeOfDayLightComponent"
+                                    float intensity0 = 345.708
+                                    float intensity1 = 345.708
+                                    float intensity2 = 345.708
+                                    float intensity3 = 345.708
+                                    float intensity4 = 345.708
+                                    float intensity5 = 345.708
+                                    float intensity6 = 345.708
+                                    float intensity7 = 345.708
+                                    float time1 = 0.22
+                                    float time2 = 0.3
+                                    float time3 = 0.4
+                                    float time4 = 0.6
+                                    float time5 = 0.7
+                                    float time6 = 0.78
+                                    float time7 = 0.823
+                                }
+                            }
+                        }
+                    }
+
+                    def Xform "MoonDistance" (
+                        active = true
+                    )
+                    {
+                        quatf xformOp:orient = (1, 4.7786787e-15, -8.885953e-15, 1.141546e-9)
+                        float3 xformOp:scale = (1, 1, 1.0000001)
+                        float3 xformOp:translate = (1.1457253, 0.000001850331, -0.15905066)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                        def Xform "Moon" (
+                            customData = {
+                                float3 rotationEulerHint = (-4.3633655e-8, 1.6536415, 0)
+                            }
+                        )
+                        {
+                            float2 ui:nodegraph:node:pos = (20, 20)
+                            int ui:nodegraph:node:stackingOrder = 1
+                            quatf xformOp:orient = (0.6772182, -2.4398648e-8, 0.73578227, 3.527473e-8)
+                            float3 xformOp:scale = (1.0000001, 1.0000002, 1)
+                            float3 xformOp:translate = (-0.008243561, 0.0000034393647, 0.086441495)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                            def RealityKitComponent "SpotLight"
+                            {
+                                float3 color = (0.57768416, 0.63233805, 0.9092006)
+                                token info:id = "RealityKit.SpotLight"
+                                float innerAngle = 30
+                                float intensity = 1040.939
+                                float outerAngle = 90
+
+                                def RealityKitStruct "Shadow"
+                                {
+                                    token cullMode = "None"
+                                    bool isEnabled = 1
+                                    token zFar = "Fixed"
+                                    float zFarValue = 3
+                                    token zNear = "Fixed"
+                                }
+                            }
+
+                            def RealityKitCustomComponent "RealityKitContent_TimeOfDayLightComponent"
+                            {
+                                float3 color0 = (0.57768416, 0.63233805, 0.9092006)
+                                float3 color1 = (0.57768416, 0.63233805, 0.9092006)
+                                float3 color2 = (0.57768416, 0.63233805, 0.9092006)
+                                float3 color3 = (0.57768416, 0.63233805, 0.9092006)
+                                float3 color4 = (0.57768416, 0.63233805, 0.9092006)
+                                float3 color5 = (0.57768416, 0.63233805, 0.9092006)
+                                float3 color6 = (0.57768416, 0.63233805, 0.9092006)
+                                float3 color7 = (0.57768416, 0.63233805, 0.9092006)
+                                uniform token info:id = "RealityKitContent.TimeOfDayLightComponent"
+                                float intensity0 = 1040.939
+                                float intensity1 = 1040.939
+                                float intensity2 = 1040.939
+                                float intensity3 = 1040.939
+                                float intensity4 = 1040.939
+                                float intensity5 = 1040.939
+                                float intensity6 = 1040.939
+                                float intensity7 = 1040.939
+                            }
+                        }
+                    }
+                }
+
+                def Xform "Sky" (
+                    customData = {
+                        float3 rotationEulerHint = (-1.5707964, 0, 0)
+                    }
+                )
+                {
+                    float2 ui:nodegraph:node:pos = (20, 20)
+                    int ui:nodegraph:node:stackingOrder = 1
+                    quatf xformOp:orient = (0.70710677, -0.70710677, 0, 0)
+                    float3 xformOp:scale = (1, 0.9999999, 0.9999999)
+                    float3 xformOp:translate = (0, 0.8, 0)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                    def RealityKitComponent "DirectionalLight"
+                    {
+                        float3 color = (0, 0.1834794, 1)
+                        token info:id = "RealityKit.DirectionalLight"
+                        float intensity = 545.708
+
+                        def RealityKitStruct "Shadow"
+                        {
+                        }
+                    }
+
+                    def RealityKitCustomComponent "RealityKitContent_TimeOfDayLightComponent"
+                    {
+                        float3 color0 = (0, 0.1834794, 1)
+                        float3 color1 = (0, 0.1834794, 1)
+                        float3 color2 = (0, 0.1834794, 1)
+                        float3 color3 = (0, 0.1834794, 1)
+                        float3 color4 = (0, 0.1834794, 1)
+                        float3 color5 = (0, 0.1834794, 1)
+                        float3 color6 = (0, 0.1834794, 1)
+                        float3 color7 = (0, 0.1834794, 1)
+                        uniform token info:id = "RealityKitContent.TimeOfDayLightComponent"
+                        float intensity0 = 545.708
+                        float intensity1 = 545.708
+                        float intensity2 = 545.708
+                        float intensity3 = 545.708
+                        float intensity4 = 545.708
+                        float intensity5 = 545.708
+                        float intensity6 = 545.708
+                        float intensity7 = 545.708
+                    }
+                }
+            }
+
+            def Scope "InfoMarkers" (
+                active = true
+            )
+            {
+                reorder nameChildren = ["Trail_End", "Trail_Endx", "Rest_Hut", "Garden"]
+                def "Trail_End" (
+                    active = true
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                    references = @TechArt/Geometry/info_marker.usd@
+                )
+                {
+                    rel material:binding = </Root/Materials/mtl_POI> (
+                        bindMaterialAs = "strongerThanDescendants"
+                    )
+                    quatf xformOp:orient = (1, 0, 0, 0)
+                    float3 xformOp:scale = (0.04, 0.04, 0.04)
+                    float3 xformOp:translate = (0.23121388, 0.26134056, -0.22618863)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                    over "Looks"
+                    {
+                        over "info_marker_matSG"
+                        {
+                            token outputs:mtlx:surface
+                            token outputs:realitykit:vertex
+                        }
+                    }
+                }
+
+                def "Rest_Hut" (
+                    active = true
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                    references = @TechArt/Geometry/info_marker.usd@
+                )
+                {
+                    rel material:binding = </Root/Materials/mtl_POI> (
+                        bindMaterialAs = "strongerThanDescendants"
+                    )
+                    float2 ui:nodegraph:node:pos = (20, 20)
+                    int ui:nodegraph:node:stackingOrder = 1
+                    quatf xformOp:orient = (0.99999994, -5.8562397e-15, 5.2129505e-9, -3.610735e-15)
+                    float3 xformOp:scale = (0.04, 0.04, 0.04)
+                    float3 xformOp:translate = (-0.08210695, 0.35747638, 0.34575272)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                }
+
+                def "Garden" (
+                    active = true
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                    references = @TechArt/Geometry/info_marker.usd@
+                )
+                {
+                    rel material:binding = </Root/Materials/mtl_POI> (
+                        bindMaterialAs = "strongerThanDescendants"
+                    )
+                    float2 ui:nodegraph:node:pos = (40, 40)
+                    int ui:nodegraph:node:stackingOrder = 2
+                    quatf xformOp:orient = (0.99999994, -5.8562397e-15, 5.2129505e-9, -3.610735e-15)
+                    float3 xformOp:scale = (0.04, 0.04, 0.04)
+                    float3 xformOp:translate = (0.05893637, 0.26462612, 0.053903773)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                }
+            }
+
+            def Scope "TrailHeads" (
+                active = true
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                reorder nameChildren = ["BrightAngelTrailhead", "TrailOfTimeTrailhead", "MatherPointTrailhead"]
+                rel material:binding = None (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+                float2 ui:nodegraph:node:pos = (20, 20)
+                int ui:nodegraph:node:stackingOrder = 1
+
+                def "BrightAngelTrailhead" (
+                    active = true
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                    customData = {
+                        float3 rotationEulerHint = (0, 3.1415927, 2.3841858e-7)
+                    }
+                    references = @TechArt/Geometry/trailhead_sign.usd@
+                )
+                {
+                    rel material:binding = </Root/Materials/mtl_Trailhead> (
+                        bindMaterialAs = "strongerThanDescendants"
+                    )
+                    quatf xformOp:orient = (-4.371139e-8, -1.1920929e-7, 1, -5.2108035e-15)
+                    float3 xformOp:scale = (0.07, 0.07, 0.07)
+                    float3 xformOp:translate = (-0.18647335, 0.33343643, 0.4195692)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                }
+
+                def "TrailOfTimeTrailhead" (
+                    active = true
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                    customData = {
+                        float3 rotationEulerHint = (-1.1920929e-7, 3.1415927, 0)
+                    }
+                    references = @TechArt/Geometry/trailhead_sign.usd@
+                )
+                {
+                    rel material:binding = </Root/Materials/mtl_Trailhead> (
+                        bindMaterialAs = "strongerThanDescendants"
+                    )
+                    float2 ui:nodegraph:node:pos = (20, 20)
+                    int ui:nodegraph:node:stackingOrder = 1
+                    quatf xformOp:orient = (-4.371139e-8, 3.049491e-15, 1, 5.9604645e-8)
+                    float3 xformOp:scale = (0.07, 0.07, 0.07)
+                    float3 xformOp:translate = (0.1699158, 0.3428514, 0.2825511)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                }
+
+                def "MatherPointTrailhead" (
+                    active = true
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                    customData = {
+                        float3 rotationEulerHint = (-1.1920929e-7, 2.4986696, 0)
+                    }
+                    references = @TechArt/Geometry/trailhead_sign.usd@
+                )
+                {
+                    rel material:binding = </Root/Materials/mtl_Trailhead> (
+                        bindMaterialAs = "strongerThanDescendants"
+                    )
+                    float2 ui:nodegraph:node:pos = (40, 40)
+                    int ui:nodegraph:node:stackingOrder = 2
+                    quatf xformOp:orient = (0.31595343, 1.8832296e-8, 0.9487747, 5.655138e-8)
+                    float3 xformOp:scale = (0.07, 0.07, 0.07)
+                    float3 xformOp:translate = (0.3105034, 0.34726554, 0.32613054)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                }
+            }
+
+            def Scope "FX" (
+                active = true
+            )
+            {
+                reorder nameChildren = ["cloud_01", "cloud_02", "cloud_03", "cloud_04", "FogOnSide", "anim_bird_a_loop", "Clouds"]
+                def "anim_bird_a_loop" (
+                    active = true
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                    references = @TechArt/Geometry/anim_bird_a_loop.usd@
+                )
+                {
+                    rel material:binding = </Root/Materials/mtl_Birds> (
+                        bindMaterialAs = "strongerThanDescendants"
+                    )
+                    quatf xformOp:orient = (1, 0, 3.029548e-15, 0)
+                    float3 xformOp:scale = (0.010000001, 0.010000001, 0.010000001)
+                    float3 xformOp:translate = (-0.03786969, 0.3350404, 0.25177404)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                    over "geom"
+                    {
+                        over "bird1_skinned_mesh"
+                        {
+                            float3 xformOp:scale = (1, 1, 1)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                            over "bird1_static_mesh"
+                            {
+                                over "bird1_geom"
+                                {
+                                    over "bird1_body_a_PLY"
+                                    {
+                                        float3 xformOp:scale = (1, 1, 1)
+                                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                                    }
+                                }
+                            }
+
+                            over "bird1_bind"
+                            {
+                                float3 xformOp:scale = (1, 1, 1)
+                                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                            }
+                        }
+                    }
+                }
+
+                def Scope "Clouds" (
+                    active = true
+                )
+                {
+                    reorder nameChildren = ["CloudsGroup", "Dummy_CloudsGroup_Left", "Dummy_CloudsGroup_Right"]
+                    def Xform "CloudsGroup" (
+                        active = true
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        reorder nameChildren = ["cloud_07", "cloud_01a", "cloud_03a", "cloud_06a", "cloud_07a", "g2_cloud_07", "g2_cloud_01a", "g2_cloud_03a", "g2_cloud_06a", "g2_cloud_07a", "g3_cloud_07", "g3_cloud_01a", "g3_cloud_03a", "g3_cloud_06a", "g3_cloud_07a"]
+                        rel material:binding = None (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+
+                        def "cloud_03a" (
+                            active = true
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                            references = @TechArt/Geometry/cloud_03.usd@
+                        )
+                        {
+                            reorder nameChildren = ["cloud_03_mesh", "Looks"]
+                            rel material:binding = </Root/Materials/mtl_Cloud> (
+                                bindMaterialAs = "strongerThanDescendants"
+                            )
+                            quatf xformOp:orient = (4.3711385e-8, 0, 1, 0)
+                            float3 xformOp:scale = (1.0000001, 1.0000001, 1.0000001)
+                            float3 xformOp:translate = (-0.15879588, 0.45370394, -0.47477335)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def "cloud_01a" (
+                            active = true
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                            references = @TechArt/Geometry/cloud_01.usd@
+                        )
+                        {
+                            reorder nameChildren = ["cloud_02", "cloud_01_mesh", "Looks"]
+                            rel material:binding = </Root/Materials/mtl_Cloud> (
+                                bindMaterialAs = "strongerThanDescendants"
+                            )
+                            float2 ui:nodegraph:node:pos = (20, 20)
+                            int ui:nodegraph:node:stackingOrder = 1
+                            quatf xformOp:orient = (4.3711385e-8, 0, 1, 0)
+                            float3 xformOp:scale = (1.0000001, 1.0000001, 1.0000001)
+                            float3 xformOp:translate = (0.53897583, 0.51563627, -0.07631359)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def "cloud_06a" (
+                            active = true
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                            references = @TechArt/Geometry/cloud_06.usd@
+                        )
+                        {
+                            rel material:binding = </Root/Materials/mtl_Cloud> (
+                                bindMaterialAs = "strongerThanDescendants"
+                            )
+                            quatf xformOp:orient = (4.371138e-8, 0, 1, 0)
+                            float3 xformOp:scale = (1, 1, 1)
+                            float3 xformOp:translate = (0.014557754, 0.5156363, 0.13469495)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def "cloud_07a" (
+                            active = true
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                            references = @TechArt/Geometry/cloud_07.usd@
+                        )
+                        {
+                            rel material:binding = </Root/Materials/mtl_Cloud> (
+                                bindMaterialAs = "strongerThanDescendants"
+                            )
+                            quatf xformOp:orient = (4.371138e-8, 0, 1, 0)
+                            float3 xformOp:scale = (1.0000001, 1.0000001, 1.0000001)
+                            float3 xformOp:translate = (-0.25108585, 0.46058494, 0.40476972)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def "cloud_07" (
+                            active = true
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                            customData = {
+                                float3 rotationEulerHint = (0, 0, 0)
+                            }
+                            references = @TechArt/Geometry/cloud_07.usd@
+                        )
+                        {
+                            rel material:binding = </Root/Materials/mtl_Cloud> (
+                                bindMaterialAs = "strongerThanDescendants"
+                            )
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (1.5, 1.5, 1.5)
+                            float3 xformOp:translate = (0.28318074, 0.4900101, -0.35539812)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def "g2_cloud_07" (
+                            active = true
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                            customData = {
+                                float3 rotationEulerHint = (0, 0, 0)
+                            }
+                            references = @TechArt/Geometry/cloud_07.usd@
+                        )
+                        {
+                            rel material:binding = </Root/Materials/mtl_Cloud> (
+                                bindMaterialAs = "strongerThanDescendants"
+                            )
+                            quatf xformOp:orient = (0.99999994, 0, 2.9264467e-15, 0)
+                            float3 xformOp:scale = (1.5000001, 1.5000001, 1.5000001)
+                            float3 xformOp:translate = (1.2831808, 0.4900102, -0.35539818)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def "g2_cloud_01a" (
+                            active = true
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                            references = @TechArt/Geometry/cloud_01.usd@
+                        )
+                        {
+                            reorder nameChildren = ["cloud_02", "cloud_01_mesh", "Looks"]
+                            rel material:binding = </Root/Materials/mtl_Cloud> (
+                                bindMaterialAs = "strongerThanDescendants"
+                            )
+                            float2 ui:nodegraph:node:pos = (20, 20)
+                            int ui:nodegraph:node:stackingOrder = 1
+                            quatf xformOp:orient = (4.371138e-8, 0, 1, 0)
+                            float3 xformOp:scale = (1.0000002, 1.0000002, 1.0000002)
+                            float3 xformOp:translate = (1.538976, 0.5156364, -0.07631361)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def "g2_cloud_03a" (
+                            active = true
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                            references = @TechArt/Geometry/cloud_03.usd@
+                        )
+                        {
+                            reorder nameChildren = ["cloud_03_mesh", "Looks"]
+                            rel material:binding = </Root/Materials/mtl_Cloud> (
+                                bindMaterialAs = "strongerThanDescendants"
+                            )
+                            quatf xformOp:orient = (4.371138e-8, 0, 1, 0)
+                            float3 xformOp:scale = (1.0000002, 1.0000002, 1.0000002)
+                            float3 xformOp:translate = (0.8412042, 0.45370403, -0.4747734)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def "g2_cloud_06a" (
+                            active = true
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                            references = @TechArt/Geometry/cloud_06.usd@
+                        )
+                        {
+                            rel material:binding = </Root/Materials/mtl_Cloud> (
+                                bindMaterialAs = "strongerThanDescendants"
+                            )
+                            quatf xformOp:orient = (4.371138e-8, 0, 1, 0)
+                            float3 xformOp:scale = (1.0000001, 1.0000001, 1.0000001)
+                            float3 xformOp:translate = (1.0145578, 0.51563644, 0.13469496)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def "g2_cloud_07a" (
+                            active = true
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                            references = @TechArt/Geometry/cloud_07.usd@
+                        )
+                        {
+                            rel material:binding = </Root/Materials/mtl_Cloud> (
+                                bindMaterialAs = "strongerThanDescendants"
+                            )
+                            quatf xformOp:orient = (4.3711378e-8, 0, 1, 0)
+                            float3 xformOp:scale = (1.0000002, 1.0000002, 1.0000002)
+                            float3 xformOp:translate = (0.7489141, 0.46058503, 0.4047698)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def "g3_cloud_07" (
+                            active = true
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                            customData = {
+                                float3 rotationEulerHint = (0, 0, 0)
+                            }
+                            references = @TechArt/Geometry/cloud_07.usd@
+                        )
+                        {
+                            rel material:binding = </Root/Materials/mtl_Cloud> (
+                                bindMaterialAs = "strongerThanDescendants"
+                            )
+                            quatf xformOp:orient = (0.99999994, 0, 2.9264467e-15, 0)
+                            float3 xformOp:scale = (1.5000001, 1.5000001, 1.5000001)
+                            float3 xformOp:translate = (-0.7168192, 0.4900102, -0.35539818)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def "g3_cloud_01a" (
+                            active = true
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                            references = @TechArt/Geometry/cloud_01.usd@
+                        )
+                        {
+                            reorder nameChildren = ["cloud_02", "cloud_01_mesh", "Looks"]
+                            rel material:binding = </Root/Materials/mtl_Cloud> (
+                                bindMaterialAs = "strongerThanDescendants"
+                            )
+                            float2 ui:nodegraph:node:pos = (20, 20)
+                            int ui:nodegraph:node:stackingOrder = 1
+                            quatf xformOp:orient = (4.371138e-8, 0, 1, 0)
+                            float3 xformOp:scale = (1.0000002, 1.0000002, 1.0000002)
+                            float3 xformOp:translate = (-0.46102417, 0.5156364, -0.07631361)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def "g3_cloud_03a" (
+                            active = true
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                            references = @TechArt/Geometry/cloud_03.usd@
+                        )
+                        {
+                            reorder nameChildren = ["cloud_03_mesh", "Looks"]
+                            rel material:binding = </Root/Materials/mtl_Cloud> (
+                                bindMaterialAs = "strongerThanDescendants"
+                            )
+                            quatf xformOp:orient = (4.371138e-8, 0, 1, 0)
+                            float3 xformOp:scale = (1.0000002, 1.0000002, 1.0000002)
+                            float3 xformOp:translate = (-1.158796, 0.45370403, -0.4747734)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def "g3_cloud_06a" (
+                            active = true
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                            references = @TechArt/Geometry/cloud_06.usd@
+                        )
+                        {
+                            rel material:binding = </Root/Materials/mtl_Cloud> (
+                                bindMaterialAs = "strongerThanDescendants"
+                            )
+                            quatf xformOp:orient = (4.371138e-8, 0, 1, 0)
+                            float3 xformOp:scale = (1.0000001, 1.0000001, 1.0000001)
+                            float3 xformOp:translate = (-0.98544234, 0.51563644, 0.13469496)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def "g3_cloud_07a" (
+                            active = true
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                            references = @TechArt/Geometry/cloud_07.usd@
+                        )
+                        {
+                            rel material:binding = </Root/Materials/mtl_Cloud> (
+                                bindMaterialAs = "strongerThanDescendants"
+                            )
+                            quatf xformOp:orient = (4.3711378e-8, 0, 1, 0)
+                            float3 xformOp:scale = (1.0000002, 1.0000002, 1.0000002)
+                            float3 xformOp:translate = (-1.251086, 0.46058503, 0.4047698)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    def Scope "Materials" (
+        active = true
+    )
+    {
+        reorder nameChildren = ["mtl_Cloud", "mtl_Birds", "mtl_River", "mtl_Fog", "Canyon", "Hiker", "mtl_POI", "mtl_Trailhead", "mtl_Trail", "mtl_Trailhead"]
+        def "mtl_Birds" (
+            active = true
+            instanceable = true
+            references = @TechArt/Shaders/ShaderUnlitColor.usda@</ShaderUnlitColor>
+        )
+        {
+            float2 ui:nodegraph:node:pos = (20, 20)
+            int ui:nodegraph:node:stackingOrder = 1
+        }
+
+        def "mtl_River" (
+            active = true
+            instanceable = true
+            references = @TechArt/Shaders/ShaderRiver.usda@</ShaderRiver>
+        )
+        {
+            asset inputs:flow1 = @TechArt/Textures/River/round_Utility-Raw.png@
+            float2 inputs:flowScale1 = (0.75, 0.5)
+            float inputs:flowSpeed1 = 0.1
+            float inputs:flowStrength1 = 0.01
+            asset inputs:normal1 = @TechArt/Textures/River/wave_Utility-Raw.png@
+            float2 inputs:normalScale1 = (0.5, 0.25)
+            float inputs:normalSpeed1 = -0.2
+            float inputs:normalStrength1 = 0.2
+            float inputs:opacity = 1
+            float2 ui:nodegraph:node:pos = (20, 20)
+            int ui:nodegraph:node:stackingOrder = 1
+        }
+
+        def "mtl_Fog" (
+            active = true
+            instanceable = true
+            references = @TechArt/Shaders/ShaderFog.usda@</ShaderFog>
+        )
+        {
+            token cullMode = "back" (
+                allowedTokens = ["unspecified", "none", "front", "back"]
+            )
+            color3f inputs:SideFogColor = (0.32248423, 0.40243787, 0.55411536) (
+                colorSpace = "srgb_displayp3"
+            )
+            float inputs:SideFogOpacity = 1
+            float2 ui:nodegraph:node:pos = (20, 20)
+            int ui:nodegraph:node:stackingOrder = 1
+        }
+
+        def Scope "Canyon" (
+            active = true
+        )
+        {
+            reorder nameChildren = ["ShaderJadeUi", "mtl_Canyon_0", "mtl_Canyon_1", "mtl_Canyon_0_Riverbed", "mtl_Canyon_2_Sides"]
+            def "mtl_Canyon_0" (
+                active = true
+                instanceable = true
+                references = @TechArt/Shaders/ShaderTerrain.usda@</ShaderTerrain>
+            )
+            {
+                float inputs:aoScale = 1
+                asset inputs:baseColor_Ao = @TechArt/Textures/Canyon/canyon_1001_srgb_displayp3_bc_ao.png@
+                bool inputs:CloudNoise = 1
+                color3f inputs:FogColorLower = (0.26884124, 0.33109647, 0.4561632) (
+                    colorSpace = "srgb_displayp3"
+                )
+                float inputs:FogExponent = 10
+                bool inputs:GroundFog = 1
+                asset inputs:normal_roughness = @TechArt/Textures/Canyon/canyon_1001_Utility-Raw_n_r.png@
+                float2 ui:nodegraph:node:pos = (20, 20)
+                int ui:nodegraph:node:stackingOrder = 1
+            }
+
+            def "mtl_Canyon_1" (
+                active = true
+                instanceable = true
+                references = @TechArt/Shaders/ShaderTerrain.usda@</ShaderTerrain>
+            )
+            {
+                float inputs:aoScale = 1
+                asset inputs:baseColor_Ao = @TechArt/Textures/Canyon/canyon_1002_srgb_displayp3_bc_ao.png@
+                bool inputs:CloudNoise = 1
+                color3f inputs:FogColorLower = (0, 0, 0) (
+                    colorSpace = "lin_srgb"
+                )
+                float inputs:FogExponent = 10
+                bool inputs:GroundFog = 1
+                asset inputs:normal_roughness = @TechArt/Textures/Canyon/canyon_1002_Utility-Raw_n_r.png@
+                float2 ui:nodegraph:node:pos = (20, 20)
+                int ui:nodegraph:node:stackingOrder = 1
+            }
+
+            def "mtl_Canyon_0_Riverbed" (
+                active = true
+                instanceable = true
+                references = @TechArt/Shaders/ShaderTerrainRiverbed.usda@</ShaderTerrainRiverbed>
+            )
+            {
+                asset inputs:baseColor_ao = @TechArt/Textures/Canyon/canyon_1001_srgb_displayp3_bc_ao.png@
+                bool inputs:CloudNoise = 1
+                asset inputs:flowmap = @TechArt/Textures/River/wave_Utility-Raw.png@
+                float2 inputs:flowmapScale = (0.5, 0.25)
+                float inputs:flowmapSpeed = -0.1
+                float inputs:flowmapStrength = 0.01
+                color3f inputs:FogColorLower = (0.26884124, 0.33109647, 0.4561632) (
+                    colorSpace = "srgb_displayp3"
+                )
+                float inputs:FogExponent = 10
+                bool inputs:GroundFog = 1
+                asset inputs:normal_roughness = @TechArt/Textures/Canyon/canyon_1001_Utility-Raw_n_r.png@
+                float2 ui:nodegraph:node:pos = (20, 20)
+                int ui:nodegraph:node:stackingOrder = 1
+            }
+
+            def "mtl_Canyon_2_Sides" (
+                active = true
+                instanceable = true
+                references = @TechArt/Shaders/ShaderTerrainSides.usda@</ShaderTerrainSides>
+            )
+            {
+                asset inputs:baseColor_Ao = @TechArt/Textures/Canyon/canyon_1003_srgb_displayp3_bc_ao.png@
+                asset inputs:normal_roughness = @TechArt/Textures/Canyon/canyon_1003_Utility-Raw_n_r.png@
+                float2 ui:nodegraph:node:pos = (20, 20)
+                int ui:nodegraph:node:stackingOrder = 1
+            }
+        }
+
+        def Scope "Hiker" (
+            active = true
+        )
+        {
+            reorder nameChildren = ["mtl_Hiker_Sit", "mtl_Hiker_Stand", "mtl_Hiker_Bench", "mtl_Hiker_Walk"]
+            float2 ui:nodegraph:node:pos = (20, 20)
+            int ui:nodegraph:node:stackingOrder = 1
+
+            def "mtl_Hiker_Sit" (
+                active = true
+                instanceable = true
+                references = @TechArt/Shaders/ShaderJadeUi.usda@</ShaderJadeUi>
+            )
+            {
+                asset inputs:Emissive_Ao_Map = @TechArt/Textures/Hiker/hiker_sitting_display-p3_bake_ao.png@
+                asset inputs:Normal_Roughness_Map = @TechArt/Textures/Hiker/hiker_sitting_utility-raw_n_r.png@
+                float2 ui:nodegraph:node:pos = (20, 20)
+                int ui:nodegraph:node:stackingOrder = 1
+            }
+
+            def "mtl_Hiker_Stand" (
+                active = true
+                instanceable = true
+                references = @TechArt/Shaders/ShaderJadeUi.usda@</ShaderJadeUi>
+            )
+            {
+                asset inputs:Emissive_Ao_Map = @TechArt/Textures/Hiker/hiker_standing_display-p3_bake_ao.png@
+                asset inputs:Normal_Roughness_Map = @TechArt/Textures/Hiker/hiker_standing_utility-raw_n_r.png@
+                float2 ui:nodegraph:node:pos = (20, 20)
+                int ui:nodegraph:node:stackingOrder = 1
+            }
+
+            def "mtl_Hiker_Bench" (
+                active = true
+                instanceable = true
+                references = @TechArt/Shaders/ShaderJadeUi.usda@</ShaderJadeUi>
+            )
+            {
+                asset inputs:Emissive_Ao_Map = @TechArt/Textures/Hiker/hiker_sitting_bench_display-p3_bake_ao.png@
+                asset inputs:Normal_Roughness_Map = @TechArt/Textures/Hiker/hiker_sitting_bench_utility-raw_n_r.png@
+                float2 ui:nodegraph:node:pos = (20, 20)
+                int ui:nodegraph:node:stackingOrder = 1
+            }
+
+            def "mtl_Hiker_Walk" (
+                active = true
+                instanceable = true
+                references = @TechArt/Shaders/ShaderJadeUi.usda@</ShaderJadeUi>
+            )
+            {
+                asset inputs:Emissive_Ao_Map = @TechArt/Textures/Hiker/hiker_walking_display-p3_bake_ao.png@
+                asset inputs:Normal_Roughness_Map = @TechArt/Textures/Hiker/hiker_walking_utility-raw_n_r.png@
+                float2 ui:nodegraph:node:pos = (20, 20)
+                int ui:nodegraph:node:stackingOrder = 1
+            }
+        }
+
+        def "mtl_Cloud" (
+            active = true
+            references = @TechArt/Shaders/ShaderCloud.usda@</ShaderCloud>
+        )
+        {
+            asset inputs:AoMap = @TechArt/Textures/Cloud/clouds_Utility - Raw_ao.png@
+            color3f inputs:CloudBaseColor = (0.21293145, 0.14894593, 0.10276214) (
+                colorSpace = "lin_srgb"
+            )
+            color3f inputs:CloudEmissiveColor = (0.81766224, 0.936364, 1) (
+                colorSpace = "lin_srgb"
+            )
+            float inputs:CloudRoughness = 1
+            asset inputs:NormalMap = @TechArt/Textures/Cloud/clouds_Utility - Raw_n.png@
+            asset inputs:ThicknessMap = @TechArt/Textures/Cloud/clouds_Utility - Raw_sss.png@
+            token outputs:realitykit:vertex
+
+            def Shader "Dot"
+            {
+                uniform token info:id = "ND_dot_float"
+                float inputs:in.connect = </Root/Materials/mtl_Cloud/Oneminus.outputs:out>
+                float outputs:out
+                float2 ui:nodegraph:node:pos = (492.2835, 344.91833)
+                int ui:nodegraph:node:stackingOrder = 4018
+            }
+
+            over "PreviewSurface"
+            {
+                float inputs:opacity.connect = </Root/Materials/mtl_Cloud/Dot.outputs:out>
+                float inputs:roughness.connect = None
+            }
+        }
+
+        def "mtl_POI" (
+            active = true
+            instanceable = true
+            references = @TechArt/Shaders/ShaderJadeUi.usda@</ShaderJadeUi>
+        )
+        {
+            color3f inputs:CloudEmissiveColor
+            asset inputs:Emissive_Ao_Map = @TechArt/Textures/POI/info_marker_display-p3_bake_ao.png@
+            asset inputs:Normal_Roughness_Map = @TechArt/Textures/POI/info_marker_utility-raw_n_r.png@
+            float2 ui:nodegraph:node:pos = (20, 20)
+            int ui:nodegraph:node:stackingOrder = 1
+        }
+
+        def "mtl_Trail" (
+            active = true
+            instanceable = true
+            references = @TechArt/Shaders/ShaderJadeUiTrail.usda@</ShaderJadeUiTrail>
+        )
+        {
+            color3f inputs:CloudBaseColor
+            color3f inputs:CloudEmissiveColor
+            asset inputs:Emissive_Ao_Map = @TechArt/Textures/Trailline/trail_thin_display-p3_bake_ao.png@
+            float inputs:GoingBackUp = 0
+            asset inputs:Normal_Roughness_Map = @TechArt/Textures/Trailline/trail_thin_utility-raw_n_r.png@
+            float inputs:PercentCompleted = 0
+            float inputs:RadiusThick = 0.3
+            float inputs:RadiusThin = 0.175
+            float2 ui:nodegraph:node:pos = (20, 20)
+            int ui:nodegraph:node:stackingOrder = 1
+        }
+
+        def "mtl_Trailhead" (
+            active = true
+            instanceable = true
+            references = @TechArt/Shaders/ShaderPBR.usda@</ShaderPBR>
+        )
+        {
+            asset inputs:BaseColor_Ao_Map = @TechArt/Textures/Signpost/trailhead_sign_wood_bc_ao_sRGB-DisplayP3.png@
+            asset inputs:Normal_Roughness_Map = @TechArt/Textures/Signpost/trailhead_sign_wood_n_r_Utility-Raw.png@
+            float2 ui:nodegraph:node:pos = (-181.29688, 509.98438)
+            int ui:nodegraph:node:stackingOrder = 1
+        }
+    }
+
+    def RealityKitComponent "ImageBasedLight"
+    {
+        asset ibl = @@
+        uniform token info:id = "RealityKit.ImageBasedLight"
+        float intensityExponent = 0
+        bool isGlobalIBL = 0
+    }
+
+    def RealityKitComponent "ImageBasedLightReceiver"
+    {
+        rel iblEntity = </Root>
+        uniform token info:id = "RealityKit.ImageBasedLightReceiver"
+    }
+
+    def RealityKitComponent "EnvironmentLightingConfiguration"
+    {
+        float environmentLightingWeight = 0.1
+        uniform token info:id = "RealityKit.EnvironmentLightingConfiguration"
+    }
+
+    def Scope "Meta" (
+        active = true
+    )
+    {
+        def RealityKitMeshSortingGroup "Model_Sorting_Group" (
+            active = true
+        )
+        {
+        }
+    }
+}
+

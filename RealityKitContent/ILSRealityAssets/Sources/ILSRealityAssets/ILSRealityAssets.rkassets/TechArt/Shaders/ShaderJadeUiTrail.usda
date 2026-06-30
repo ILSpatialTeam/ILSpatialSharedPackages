@@ -1,0 +1,544 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "Reality Composer Pro Version 2.0 (448.0.16.0.3)"
+    }
+    defaultPrim = ""
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Material "ShaderJadeUiTrail"
+{
+    color3f inputs:CloudBaseColor = (0.21293145, 0.14894593, 0.10276214) (
+        colorSpace = "lin_srgb"
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-278.4553, -234.2513)
+                int stackingOrderInSubgraph = 3689
+            }
+        }
+    )
+    color3f inputs:CloudEmissiveColor = (0.81766224, 0.936364, 1) (
+        colorSpace = "lin_srgb"
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-317.53735, 16.94839)
+                int stackingOrderInSubgraph = 3651
+            }
+        }
+    )
+    asset inputs:Emissive_Ao_Map (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-992.2168, -87.331)
+                int stackingOrderInSubgraph = 3651
+            }
+        }
+    )
+    float inputs:GoingBackUp = 0 (
+        colorSpace = ""
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-299.1939, 1230.9465)
+                int stackingOrderInSubgraph = 4017
+            }
+        }
+    )
+    asset inputs:Normal_Roughness_Map (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-176.45541, 464.24762)
+                int stackingOrderInSubgraph = 3467
+            }
+        }
+    )
+    float inputs:PercentCompleted = 0 (
+        colorSpace = ""
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-919.87177, 1110.9707)
+                int stackingOrderInSubgraph = 3833
+            }
+        }
+    )
+    float inputs:RadiusThick = 0.002 (
+        colorSpace = ""
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-341.21686, 700.92926)
+                int stackingOrderInSubgraph = 3699
+            }
+        }
+    )
+    float inputs:RadiusThin = 0.001 (
+        colorSpace = ""
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-245.51308, 981.0469)
+                int stackingOrderInSubgraph = 3836
+            }
+        }
+    )
+    token outputs:mtlx:surface.connect = </ShaderJadeUiTrail/PBRSurface.outputs:out>
+    token outputs:realitykit:vertex.connect = </ShaderJadeUiTrail/GeometryModifier.outputs:out>
+    float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (609.37946, 100.5)
+    int ui:nodegraph:realitykit:subgraphOutputs:stackingOrder = 488
+
+    def Shader "PBRSurface"
+    {
+        uniform token info:id = "ND_realitykit_pbr_surfaceshader"
+        float inputs:ambientOcclusion.connect = </ShaderJadeUiTrail/Dot_1.outputs:out>
+        color3f inputs:baseColor.connect = </ShaderJadeUiTrail/Mix_1.outputs:out>
+        float inputs:clearcoat = 1
+        float3 inputs:clearcoatNormal
+        float inputs:clearcoatRoughness = 0.6
+        color3f inputs:emissiveColor = (1, 1, 1) (
+            colorSpace = "srgb_displayp3"
+        )
+        color3f inputs:emissiveColor.connect = </ShaderJadeUiTrail/Subtract.outputs:out>
+        bool inputs:hasPremultipliedAlpha
+        float inputs:metallic = 0
+        float3 inputs:normal.connect = </ShaderJadeUiTrail/SampleNormalRoughness.outputs:Normal>
+        float inputs:opacity
+        float inputs:opacityThreshold
+        float inputs:roughness.connect = </ShaderJadeUiTrail/SampleNormalRoughness.outputs:roughness>
+        float inputs:specular
+        token outputs:out
+        float2 ui:nodegraph:node:pos = (342.30527, 118.54297)
+        int ui:nodegraph:node:stackingOrder = 530
+    }
+
+    def Shader "Multiply"
+    {
+        uniform token info:id = "ND_multiply_color3FA"
+        color3f inputs:in1.connect = </ShaderJadeUiTrail/SampleEmissiveAo.outputs:emissive>
+        float inputs:in2.connect = </ShaderJadeUiTrail/EmissiveScale.outputs:out>
+        color3f outputs:out
+        float2 ui:nodegraph:node:pos = (-628.9753, -23.463589)
+        int ui:nodegraph:node:stackingOrder = 3651
+    }
+
+    def Shader "Mix"
+    {
+        uniform token info:id = "ND_mix_color3"
+        color3f inputs:bg.connect = </ShaderJadeUiTrail.inputs:CloudEmissiveColor>
+        color3f inputs:fg.connect = </ShaderJadeUiTrail/Multiply.outputs:out>
+        float inputs:mix = 0.3
+        color3f outputs:out
+        float2 ui:nodegraph:node:pos = (-87.77991, -18.372957)
+        int ui:nodegraph:node:stackingOrder = 3651
+    }
+
+    def Shader "Mix_1"
+    {
+        uniform token info:id = "ND_mix_color3"
+        color3f inputs:bg.connect = </ShaderJadeUiTrail/BaseColor.outputs:out>
+        color3f inputs:fg.connect = </ShaderJadeUiTrail.inputs:CloudBaseColor>
+        float inputs:mix = 0.2
+        color3f outputs:out
+        float2 ui:nodegraph:node:pos = (-83.30308, -205.74545)
+        int ui:nodegraph:node:stackingOrder = 3689
+    }
+
+    def Shader "Subtract"
+    {
+        uniform token info:id = "ND_subtract_color3FA"
+        color3f inputs:in1.connect = </ShaderJadeUiTrail/Mix.outputs:out>
+        float inputs:in2.connect = </ShaderJadeUiTrail/SmoothStep.outputs:out>
+        color3f outputs:out
+        float2 ui:nodegraph:node:pos = (64.44628, 44.194992)
+        int ui:nodegraph:node:stackingOrder = 3654
+    }
+
+    def Shader "SmoothStep"
+    {
+        uniform token info:id = "ND_smoothstep_float"
+        float inputs:high = -0.5
+        float inputs:in.connect = </ShaderJadeUiTrail/Dot_1.outputs:out>
+        float inputs:low = 1.3
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (-162.40213, 243.83894)
+        int ui:nodegraph:node:stackingOrder = 3476
+    }
+
+    def Shader "EmissiveScale"
+    {
+        uniform token info:id = "ND_constant_float"
+        float inputs:value = 0.8
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (-782.733, 11.681461)
+        int ui:nodegraph:node:stackingOrder = 3651
+    }
+
+    def NodeGraph "SampleEmissiveAo"
+    {
+        asset inputs:EmissiveAoMap (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (104.640625, 68.0625)
+                    int stackingOrderInSubgraph = 844
+                }
+            }
+        )
+        asset inputs:EmissiveAoMap.connect = </ShaderJadeUiTrail.inputs:Emissive_Ao_Map>
+        float outputs:ao = 1 (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-112.06822, -32.991535)
+                    int stackingOrderInSubgraph = 821
+                }
+            }
+        )
+        float outputs:ao.connect = </ShaderJadeUiTrail/SampleEmissiveAo/Separate4.outputs:outa>
+        color3f outputs:emissive (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (618.0543, 216.1732)
+                    int stackingOrderInSubgraph = 845
+                }
+            }
+        )
+        color3f outputs:emissive.connect = </ShaderJadeUiTrail/SampleEmissiveAo/Combine3.outputs:out>
+        float2 ui:nodegraph:node:pos = (-780.869, -92.18803)
+        int ui:nodegraph:node:stackingOrder = 3651
+        string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["outputs:Diffuse", "inputs:EmissiveAoMap"]
+        float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (967.468, 261.58163)
+        int ui:nodegraph:realitykit:subgraphOutputs:stackingOrder = 845
+
+        def Shader "Image2D"
+        {
+            uniform token info:id = "ND_RealityKitTexture2D_color4"
+            float inputs:bias
+            float inputs:dynamic_min_lod_clamp
+            asset inputs:file (
+                colorSpace = "srgb_displayp3"
+            )
+            asset inputs:file.connect = </ShaderJadeUiTrail/SampleEmissiveAo.inputs:EmissiveAoMap>
+            float inputs:min_lod_clamp
+            string inputs:mip_filter = "nearest"
+            bool inputs:no_flip_v = 1
+            int2 inputs:offset
+            float2 inputs:texcoord
+            color4f outputs:out
+            float2 ui:nodegraph:node:pos = (317.07272, 200.1732)
+            int ui:nodegraph:node:stackingOrder = 838
+            string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["inputs:border_color"]
+        }
+
+        def Shader "Separate4"
+        {
+            uniform token info:id = "ND_separate4_color4"
+            color4f inputs:in.connect = </ShaderJadeUiTrail/SampleEmissiveAo/Image2D.outputs:out>
+            float outputs:outa
+            float outputs:outb
+            float outputs:outg
+            float outputs:outr
+            float2 ui:nodegraph:node:pos = (533.06525, 255.2155)
+            int ui:nodegraph:node:stackingOrder = 823
+        }
+
+        def Shader "Combine3"
+        {
+            uniform token info:id = "ND_combine3_color3"
+            float inputs:in1.connect = </ShaderJadeUiTrail/SampleEmissiveAo/Separate4.outputs:outr>
+            float inputs:in2.connect = </ShaderJadeUiTrail/SampleEmissiveAo/Separate4.outputs:outg>
+            float inputs:in3.connect = </ShaderJadeUiTrail/SampleEmissiveAo/Separate4.outputs:outb>
+            color3f outputs:out
+            float2 ui:nodegraph:node:pos = (763.12445, 214.81714)
+            int ui:nodegraph:node:stackingOrder = 843
+            string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["inputs:in2"]
+        }
+    }
+
+    def NodeGraph "SampleNormalRoughness"
+    {
+        asset inputs:NormalRoughnessMap (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (27.963911, 73.1087)
+                    int stackingOrderInSubgraph = 766
+                }
+            }
+        )
+        asset inputs:NormalRoughnessMap.connect = </ShaderJadeUiTrail.inputs:Normal_Roughness_Map>
+        float3 outputs:Normal (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (693, 229.5)
+                    int stackingOrderInSubgraph = 761
+                }
+            }
+        )
+        float3 outputs:Normal.connect = </ShaderJadeUiTrail/SampleNormalRoughness/NormalMapDecode.outputs:out>
+        float outputs:roughness (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-112.06822, -32.991535)
+                    int stackingOrderInSubgraph = 765
+                }
+            }
+        )
+        float outputs:roughness.connect = </ShaderJadeUiTrail/SampleNormalRoughness/Separate4.outputs:outw>
+        float2 ui:nodegraph:node:pos = (73.74594, 458.67413)
+        int ui:nodegraph:node:stackingOrder = 3467
+        string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["inputs:NormalMap"]
+        float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (1001.5682, 350.0174)
+        int ui:nodegraph:realitykit:subgraphOutputs:stackingOrder = 769
+
+        def Shader "NormalMapDecode"
+        {
+            uniform token info:id = "ND_normal_map_decode"
+            float3 inputs:in.connect = </ShaderJadeUiTrail/SampleNormalRoughness/Convert.outputs:out>
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (772.3711, 176.55078)
+            int ui:nodegraph:node:stackingOrder = 764
+        }
+
+        def Shader "Image2D_2"
+        {
+            uniform token info:id = "ND_RealityKitTexture2D_vector4"
+            float inputs:bias
+            string inputs:border_color
+            float4 inputs:default
+            float inputs:dynamic_min_lod_clamp
+            asset inputs:file.connect = </ShaderJadeUiTrail/SampleNormalRoughness.inputs:NormalRoughnessMap>
+            string inputs:mip_filter = "nearest"
+            bool inputs:no_flip_v = 1
+            int2 inputs:offset
+            float2 inputs:texcoord
+            string inputs:u_wrap_mode
+            string inputs:v_wrap_mode
+            float4 outputs:out
+            float2 ui:nodegraph:node:pos = (338, 190.5)
+            int ui:nodegraph:node:stackingOrder = 768
+        }
+
+        def Shader "Convert"
+        {
+            uniform token info:id = "ND_convert_vector4_vector3"
+            float4 inputs:in.connect = </ShaderJadeUiTrail/SampleNormalRoughness/Image2D_2.outputs:out>
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (578.75, 190.5)
+            int ui:nodegraph:node:stackingOrder = 759
+        }
+
+        def Shader "Separate4"
+        {
+            uniform token info:id = "ND_separate4_vector4"
+            float4 inputs:in.connect = </ShaderJadeUiTrail/SampleNormalRoughness/Image2D_2.outputs:out>
+            float outputs:outw
+            float outputs:outy
+            float outputs:outz
+            float2 ui:nodegraph:node:pos = (566.637, 362.28677)
+            int ui:nodegraph:node:stackingOrder = 767
+        }
+    }
+
+    def Shader "BaseColor"
+    {
+        uniform token info:id = "ND_constant_color3"
+        color3f inputs:value = (0.3319247, 0.3319247, 0.3319247) (
+            colorSpace = "srgb_displayp3"
+        )
+        color3f outputs:out
+        float2 ui:nodegraph:node:pos = (-272.11322, -168.42989)
+        int ui:nodegraph:node:stackingOrder = 3689
+    }
+
+    def Shader "Dot"
+    {
+        uniform token info:id = "ND_dot_float"
+        float inputs:in.connect = </ShaderJadeUiTrail/SampleEmissiveAo.outputs:ao>
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (-627.5139, 110.3418)
+        int ui:nodegraph:node:stackingOrder = 3434
+    }
+
+    def Shader "Dot_1"
+    {
+        uniform token info:id = "ND_dot_float"
+        float inputs:in.connect = </ShaderJadeUiTrail/Dot.outputs:out>
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (-280.58762, 109.86114)
+        int ui:nodegraph:node:stackingOrder = 3478
+    }
+
+    def Shader "Multiply_2"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </ShaderJadeUiTrail.inputs:RadiusThick>
+        float inputs:in2.connect = </ShaderJadeUiTrail/cmToM.outputs:out>
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (-90.54199, 829.385)
+        int ui:nodegraph:node:stackingOrder = 1762
+    }
+
+    def Shader "Oneminus"
+    {
+        uniform token info:id = "ND_realitykit_oneminus_float"
+        float inputs:in.connect = </ShaderJadeUiTrail.inputs:PercentCompleted>
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (-767.2779, 1109.3428)
+        int ui:nodegraph:node:stackingOrder = 4019
+    }
+
+    def Shader "Mix_2"
+    {
+        uniform token info:id = "ND_mix_float"
+        float inputs:bg.connect = </ShaderJadeUiTrail/Oneminus_1.outputs:out>
+        float inputs:fg.connect = </ShaderJadeUiTrail/Floor.outputs:out>
+        float inputs:mix.connect = </ShaderJadeUiTrail.inputs:GoingBackUp>
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (-80.74326, 1138.4982)
+        int ui:nodegraph:node:stackingOrder = 4017
+    }
+
+    def Shader "Multiply_1"
+    {
+        uniform token info:id = "ND_multiply_vector3FA"
+        float3 inputs:in1.connect = </ShaderJadeUiTrail/Normal.outputs:out>
+        float inputs:in2.connect = </ShaderJadeUiTrail/Mix_3.outputs:out>
+        float3 outputs:out
+        float2 ui:nodegraph:node:pos = (397.18573, 998.20654)
+        int ui:nodegraph:node:stackingOrder = 1762
+    }
+
+    def Shader "Add"
+    {
+        uniform token info:id = "ND_add_float"
+        float inputs:in1.connect = </ShaderJadeUiTrail/Separate3.outputs:outr>
+        float inputs:in2.connect = </ShaderJadeUiTrail/Oneminus.outputs:out>
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (-623.53925, 1073.1434)
+        int ui:nodegraph:node:stackingOrder = 3833
+    }
+
+    def Shader "Clamp"
+    {
+        uniform token info:id = "ND_clamp_float"
+        float inputs:high
+        float inputs:in.connect = </ShaderJadeUiTrail/Add.outputs:out>
+        float inputs:low
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (-517.7233, 1077.7384)
+        int ui:nodegraph:node:stackingOrder = 3833
+    }
+
+    def Shader "Mix_3"
+    {
+        uniform token info:id = "ND_mix_float"
+        float inputs:bg.connect = </ShaderJadeUiTrail/Subtract_2.outputs:out>
+        float inputs:fg.connect = </ShaderJadeUiTrail/Subtract_1.outputs:out>
+        float inputs:mix.connect = </ShaderJadeUiTrail/Mix_2.outputs:out>
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (253.82294, 1030.5374)
+        int ui:nodegraph:node:stackingOrder = 1762
+    }
+
+    def Shader "Normal"
+    {
+        uniform token info:id = "ND_normal_vector3"
+        float3 outputs:out
+        float2 ui:nodegraph:node:pos = (248.3769, 920.60425)
+        int ui:nodegraph:node:stackingOrder = 4022
+    }
+
+    def Shader "Subtract_1"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </ShaderJadeUiTrail/Multiply_2.outputs:out>
+        float inputs:in2 = 0.001
+        float inputs:in2.connect = </ShaderJadeUiTrail/assetRadius.outputs:out>
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (36.274918, 857.823)
+        int ui:nodegraph:node:stackingOrder = 3703
+    }
+
+    def Shader "GeometryColor"
+    {
+        uniform token info:id = "ND_geomcolor_color3"
+        color3f outputs:out
+        float2 ui:nodegraph:node:pos = (-1009.3608, 1035.1714)
+        int ui:nodegraph:node:stackingOrder = 3833
+    }
+
+    def Shader "Separate3"
+    {
+        uniform token info:id = "ND_separate3_color3"
+        color3f inputs:in.connect = </ShaderJadeUiTrail/GeometryColor.outputs:out>
+        float outputs:outb
+        float outputs:outg
+        float outputs:outr
+        float2 ui:nodegraph:node:pos = (-803.93744, 1034.2726)
+        int ui:nodegraph:node:stackingOrder = 3833
+    }
+
+    def Shader "Oneminus_1"
+    {
+        uniform token info:id = "ND_realitykit_oneminus_float"
+        float inputs:in.connect = </ShaderJadeUiTrail/Floor.outputs:out>
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (-260.88373, 1173.132)
+        int ui:nodegraph:node:stackingOrder = 4017
+    }
+
+    def Shader "cmToM"
+    {
+        uniform token info:id = "ND_constant_float"
+        float inputs:value = 0.01
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (-374.92236, 837.5863)
+        int ui:nodegraph:node:stackingOrder = 3701
+    }
+
+    def Shader "Subtract_2"
+    {
+        uniform token info:id = "ND_subtract_float"
+        float inputs:in1.connect = </ShaderJadeUiTrail/Multiply_3.outputs:out>
+        float inputs:in2 = 0.001
+        float inputs:in2.connect = </ShaderJadeUiTrail/assetRadius.outputs:out>
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (37.666195, 997.2409)
+        int ui:nodegraph:node:stackingOrder = 3705
+    }
+
+    def Shader "Multiply_3"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </ShaderJadeUiTrail.inputs:RadiusThin>
+        float inputs:in2.connect = </ShaderJadeUiTrail/cmToM.outputs:out>
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (-72.617004, 988.63135)
+        int ui:nodegraph:node:stackingOrder = 1762
+    }
+
+    def Shader "assetRadius"
+    {
+        uniform token info:id = "ND_constant_float"
+        float inputs:value = 0.001
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (-167.28746, 909.4024)
+        int ui:nodegraph:node:stackingOrder = 3695
+    }
+
+    def Shader "Floor"
+    {
+        uniform token info:id = "ND_floor_float"
+        float inputs:in.connect = </ShaderJadeUiTrail/Clamp.outputs:out>
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (-382.2842, 1132.5686)
+        int ui:nodegraph:node:stackingOrder = 4017
+    }
+
+    def Shader "GeometryModifier"
+    {
+        uniform token info:id = "ND_realitykit_geometrymodifier_2_0_vertexshader"
+        float3 inputs:modelPositionOffset.connect = </ShaderJadeUiTrail/Multiply_1.outputs:out>
+        token outputs:out
+        float2 ui:nodegraph:node:pos = (604.32263, 948.7703)
+        int ui:nodegraph:node:stackingOrder = 4025
+        string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["inputs:modelPositionOffset"]
+    }
+}
+

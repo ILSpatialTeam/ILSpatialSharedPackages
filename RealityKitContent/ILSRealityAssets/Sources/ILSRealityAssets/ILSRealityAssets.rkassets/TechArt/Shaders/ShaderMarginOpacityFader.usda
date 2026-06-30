@@ -1,0 +1,316 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "Reality Composer Pro Version 2.0 (448.100.11)"
+    }
+    defaultPrim = "Root"
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "Root"
+{
+    reorder nameChildren = ["Material", "Cube", "Sphere"]
+    def Material "Material"
+    {
+        token cullMode = "unspecified" (
+            allowedTokens = ["unspecified", "none", "front", "back"]
+        )
+        float inputs:backEdgeInset = 0.2 (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-1428.2064, -202.06807)
+                    int stackingOrderInSubgraph = 3916
+                }
+            }
+        )
+        float inputs:bottomEdgeInset = 0.2 (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-1435.8094, -262.44827)
+                    int stackingOrderInSubgraph = 3916
+                }
+            }
+        )
+        float inputs:leadingEdgeInset = 0.2 (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-1437.987, -321.97836)
+                    int stackingOrderInSubgraph = 3916
+                }
+            }
+        )
+        float3 inputs:maxContentBounds = (0.2, 0.2, 0.2) (
+            colorSpace = ""
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-1349.9429, 24.960499)
+                    int stackingOrderInSubgraph = 3916
+                }
+            }
+        )
+        float3 inputs:minContentBounds = (-0.2, -0.2, -0.2) (
+            colorSpace = ""
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-1358.363, -129.90082)
+                    int stackingOrderInSubgraph = 3916
+                }
+            }
+        )
+        float3 inputs:sceneViewCenter = (0, 0, -0.2) (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-1629.3152, -0.22023848)
+                    int stackingOrderInSubgraph = 3916
+                }
+            }
+        )
+        float inputs:topEdgeInset = 0.2 (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-1447.0121, 143.19054)
+                    int stackingOrderInSubgraph = 3916
+                }
+            }
+        )
+        float inputs:trailingEdgeInset = 0.2 (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-1459.0192, 84.543106)
+                    int stackingOrderInSubgraph = 3916
+                }
+            }
+        )
+        token outputs:mtlx:surface.connect = </Root/Material/PreviewSurface.outputs:out>
+        token outputs:realitykit:vertex
+        float2 ui:nodegraph:node:pos = (-840.8446, 49.946945)
+        int ui:nodegraph:node:stackingOrder = 2
+        float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (196.74214, 34.72261)
+        int ui:nodegraph:realitykit:subgraphOutputs:stackingOrder = 3947
+
+        def Shader "Position"
+        {
+            uniform token info:id = "ND_position_vector3"
+            string inputs:space = "world"
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-1671.7032, -67.51711)
+            int ui:nodegraph:node:stackingOrder = 3916
+        }
+
+        def Shader "PreviewSurface"
+        {
+            uniform token info:id = "ND_UsdPreviewSurface_surfaceshader"
+            color3f inputs:diffuseColor = (1, 0.14913142, 0) (
+                colorSpace = "srgb_texture"
+            )
+            float inputs:ior = 1.5
+            float inputs:metallic
+            float3 inputs:normal
+            float inputs:opacity.connect = </Root/Material/Oneminus.outputs:out>
+            float inputs:opacityThreshold
+            float inputs:roughness = 0.5
+            float inputs:roughness.connect = None
+            token outputs:out
+            float2 ui:nodegraph:node:pos = (-27.731207, 18.552017)
+            int ui:nodegraph:node:stackingOrder = 3947
+            string[] ui:nodegraph:realitykit:node:attributesShowingChildren = []
+        }
+
+        def Shader "Divide_2"
+        {
+            uniform token info:id = "ND_divide_vector3"
+            float3 inputs:in1.connect = </Root/Material/Subtract_3.outputs:out>
+            float3 inputs:in2.connect = </Root/Material/MaxInsets.outputs:out>
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-1063.9688, -24.869951)
+            int ui:nodegraph:node:stackingOrder = 3916
+        }
+
+        def Shader "MTLMax3"
+        {
+            uniform token info:id = "ND_MTL_max3_float"
+            float inputs:x.connect = </Root/Material/Separate3.outputs:outx>
+            float inputs:y.connect = </Root/Material/Separate3.outputs:outy>
+            float inputs:z.connect = </Root/Material/Separate3.outputs:outz>
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-303.0064, -11.260356)
+            int ui:nodegraph:node:stackingOrder = 3916
+        }
+
+        def Shader "MinInsets"
+        {
+            uniform token info:id = "ND_combine3_vector3"
+            float inputs:in1.connect = </Root/Material.inputs:leadingEdgeInset>
+            float inputs:in2.connect = </Root/Material.inputs:bottomEdgeInset>
+            float inputs:in3.connect = </Root/Material.inputs:backEdgeInset>
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-1217.3799, -263.12534)
+            int ui:nodegraph:node:stackingOrder = 3916
+        }
+
+        def Shader "Subtract_3"
+        {
+            uniform token info:id = "ND_subtract_vector3"
+            float3 inputs:in1.connect = </Root/Material/Subtract.outputs:out>
+            float3 inputs:in2.connect = </Root/Material.inputs:maxContentBounds>
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-1180.2064, -31.990898)
+            int ui:nodegraph:node:stackingOrder = 3916
+        }
+
+        def Shader "MaxInsets"
+        {
+            uniform token info:id = "ND_combine3_vector3"
+            float inputs:in1.connect = </Root/Material.inputs:trailingEdgeInset>
+            float inputs:in2.connect = </Root/Material.inputs:topEdgeInset>
+            float inputs:in3 = 0
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-1249.7744, 142.9125)
+            int ui:nodegraph:node:stackingOrder = 3916
+        }
+
+        def Shader "ClampMin01"
+        {
+            uniform token info:id = "ND_clamp_vector3"
+            float3 inputs:high
+            float3 inputs:in.connect = </Root/Material/Divide_1.outputs:out>
+            float3 inputs:low = (0, 0, 0)
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-874.8595, -132.59341)
+            int ui:nodegraph:node:stackingOrder = 3949
+        }
+
+        def Shader "Subtract_2"
+        {
+            uniform token info:id = "ND_subtract_vector3"
+            float3 inputs:in1.connect = </Root/Material.inputs:minContentBounds>
+            float3 inputs:in2.connect = </Root/Material/Subtract.outputs:out>
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-1177.4226, -90.690605)
+            int ui:nodegraph:node:stackingOrder = 3916
+        }
+
+        def Shader "Oneminus"
+        {
+            uniform token info:id = "ND_realitykit_oneminus_float"
+            float inputs:in.connect = </Root/Material/MTLMax3.outputs:out>
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-184.88074, 45.672527)
+            int ui:nodegraph:node:stackingOrder = 3916
+        }
+
+        def Shader "Max"
+        {
+            uniform token info:id = "ND_max_vector3"
+            float3 inputs:in1.connect = </Root/Material/ClampMin01.outputs:out>
+            float3 inputs:in2.connect = </Root/Material/ClampMax01.outputs:out>
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-681.09735, -3.7708774)
+            int ui:nodegraph:node:stackingOrder = 3916
+        }
+
+        def Shader "ClampMax01"
+        {
+            uniform token info:id = "ND_clamp_vector3"
+            float3 inputs:high
+            float3 inputs:in.connect = </Root/Material/Divide_2.outputs:out>
+            float3 inputs:low
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-876.0365, 27.758831)
+            int ui:nodegraph:node:stackingOrder = 3916
+        }
+
+        def Shader "Separate3"
+        {
+            uniform token info:id = "ND_separate3_vector3"
+            float3 inputs:in.connect = </Root/Material/Max.outputs:out>
+            float outputs:outx
+            float outputs:outy
+            float outputs:outz
+            float2 ui:nodegraph:node:pos = (-505.40967, -0.33092815)
+            int ui:nodegraph:node:stackingOrder = 3916
+        }
+
+        def Shader "Divide_1"
+        {
+            uniform token info:id = "ND_divide_vector3"
+            float3 inputs:in1.connect = </Root/Material/Subtract_2.outputs:out>
+            float3 inputs:in2.connect = </Root/Material/MinInsets.outputs:out>
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-1064.9169, -85.09799)
+            int ui:nodegraph:node:stackingOrder = 3916
+        }
+
+        def Shader "Subtract"
+        {
+            uniform token info:id = "ND_subtract_vector3"
+            float3 inputs:in1.connect = </Root/Material/Position.outputs:out>
+            float3 inputs:in2 = (0, 0, 0.47058824)
+            float3 inputs:in2.connect = </Root/Material.inputs:sceneViewCenter>
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-1445.1307, -54.04285)
+            int ui:nodegraph:node:stackingOrder = 3916
+        }
+    }
+
+    def Cube "Cube" (
+        active = true
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        rel material:binding = </Root/Material> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        double size = 0.5
+        quatf xformOp:orient = (1, 0, 0, 0)
+        float3 xformOp:scale = (1, 1, 1)
+        float3 xformOp:translate = (-0.18966341, 0.36758238, -0.37246394)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Material "DefaultMaterial"
+        {
+            token outputs:mtlx:surface
+            token outputs:realitykit:vertex
+            prepend token outputs:surface.connect = </Root/Cube/DefaultMaterial/DefaultSurfaceShader.outputs:surface>
+            float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (0, 110.5)
+
+            def Shader "DefaultSurfaceShader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (1, 1, 1)
+                float inputs:roughness = 0.75
+                token outputs:surface
+            }
+        }
+    }
+
+    def Sphere "Sphere" (
+        active = true
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        rel material:binding = </Root/Material> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        double radius = 0.25
+        quatf xformOp:orient = (1, 0, 0, 0)
+        float3 xformOp:scale = (1, 1, 1)
+        float3 xformOp:translate = (0.29294622, 0, 0.10601568)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Material "DefaultMaterial"
+        {
+            prepend token outputs:surface.connect = </Root/Sphere/DefaultMaterial/DefaultSurfaceShader.outputs:surface>
+
+            def Shader "DefaultSurfaceShader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (1, 1, 1)
+                float inputs:roughness = 0.75
+                token outputs:surface
+            }
+        }
+    }
+}
+

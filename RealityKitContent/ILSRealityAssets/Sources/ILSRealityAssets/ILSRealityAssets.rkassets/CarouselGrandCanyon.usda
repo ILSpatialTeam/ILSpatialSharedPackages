@@ -1,0 +1,66 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "Reality Composer Pro Version 2.0 (470)"
+    }
+    defaultPrim = "Root"
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "Root"
+{
+    reorder nameChildren = ["mt_fuji_bake", "Hiker_1", "Hiker_2", "Materials", "Geometry"]
+    def Scope "Materials" (
+        active = true
+    )
+    {
+        def "GrandCanyon" (
+            active = true
+            instanceable = true
+            references = @TechArt/Shaders/ShaderBaked.usda@</ShaderBaked>
+        )
+        {
+            asset inputs:BakedMap = @TechArt/Textures/Carousel/grandcanyon_bake_display-p3.png@
+            float2 ui:nodegraph:node:pos = (20, 20)
+            int ui:nodegraph:node:stackingOrder = 1
+        }
+    }
+
+    def Scope "Geometry" (
+        active = true
+    )
+    {
+        float2 ui:nodegraph:node:pos = (20, 20)
+        int ui:nodegraph:node:stackingOrder = 1
+
+        def "Carousel_GrandCanyon" (
+            active = true
+            prepend apiSchemas = ["MaterialBindingAPI"]
+            customData = {
+                float3 rotationEulerHint = (0, 3.1415927, 0)
+            }
+            prepend references = @TechArt/Geometry/Carousel_GrandCanyon.usd@</grandcanyon>
+        )
+        {
+            rel material:binding = </Root/Materials/GrandCanyon> (
+                bindMaterialAs = "weakerThanDescendants"
+            )
+            quatf xformOp:orient = (-4.371139e-8, 0, 1, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "grandcanyon_mesh"
+            {
+                def RealityKitComponent "GroundingShadow"
+                {
+                    bool enableIBLShadow = 1
+                    bool enableMeshShadow = 1
+                    bool enableReceiveIBLShadow = 0
+                    bool enableReceiveMeshShadow = 0
+                    uniform token info:id = "RealityKit.GroundingShadow"
+                }
+            }
+        }
+    }
+}
+

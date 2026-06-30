@@ -1,0 +1,42 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "Reality Composer Pro Version 2.0 (448.0.16.0.3)"
+    }
+    defaultPrim = ""
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Material "ShaderUnlitColor"
+{
+    color3f inputs:color = (0, 0, 0) (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-215.78448, 331.89316)
+                int stackingOrderInSubgraph = 7
+            }
+        }
+    )
+    token outputs:mtlx:surface.connect = </ShaderUnlitColor/UnlitSurface.outputs:out>
+    token outputs:realitykit:vertex
+    float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (346.42975, 293.6364)
+    int ui:nodegraph:realitykit:subgraphOutputs:stackingOrder = 149
+
+    def Shader "UnlitSurface"
+    {
+        uniform token info:id = "ND_realitykit_unlit_surfaceshader"
+        bool inputs:applyPostProcessToneMap = 0
+        color3f inputs:color = (0, 0, 0) (
+            colorSpace = "srgb_displayp3"
+        )
+        color3f inputs:color.connect = </ShaderUnlitColor.inputs:color>
+        bool inputs:hasPremultipliedAlpha
+        float inputs:opacity
+        float inputs:opacityThreshold
+        token outputs:out
+        float2 ui:nodegraph:node:pos = (51.149708, 353.75146)
+        int ui:nodegraph:node:stackingOrder = 5
+    }
+}
+

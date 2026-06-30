@@ -1,0 +1,104 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "Reality Composer Pro Version 2.0 (448.0.16.0.3)"
+    }
+    defaultPrim = "ShaderFog"
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Material "ShaderFog"
+{
+    token cullMode = "front" (
+        allowedTokens = ["unspecified", "none", "front", "back"]
+    )
+    color3f inputs:SideFogColor = (0.4412746, 0.5518464, 0.8360756) (
+        colorSpace = "srgb_displayp3"
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (145.1423, -210.50716)
+                int stackingOrderInSubgraph = 709
+            }
+        }
+    )
+    float inputs:SideFogOpacity = 1 (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (37.960484, -45.512573)
+                int stackingOrderInSubgraph = 710
+            }
+        }
+    )
+    token outputs:mtlx:surface.connect = </ShaderFog/UnlitSurface.outputs:out>
+    token outputs:realitykit:vertex
+    float2 ui:nodegraph:node:pos = (20, 20)
+    int ui:nodegraph:node:stackingOrder = 1
+    float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (643.1011, -184.37485)
+    int ui:nodegraph:realitykit:subgraphOutputs:stackingOrder = 704
+
+    def Shader "SmoothStep"
+    {
+        uniform token info:id = "ND_smoothstep_float"
+        float inputs:high = 0
+        float inputs:in.connect = </ShaderFog/Separate2.outputs:outy>
+        float inputs:low = 1
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (-167.20413, -145.96771)
+        int ui:nodegraph:node:stackingOrder = 821
+    }
+
+    def Shader "UnlitSurface"
+    {
+        uniform token info:id = "ND_realitykit_unlit_surfaceshader"
+        bool inputs:applyPostProcessToneMap = 0
+        color3f inputs:color = (0.4412746, 0.5518464, 0.8360756) (
+            colorSpace = "srgb_displayp3"
+        )
+        color3f inputs:color.connect = </ShaderFog.inputs:SideFogColor>
+        bool inputs:hasPremultipliedAlpha
+        float inputs:opacity.connect = </ShaderFog/Multiply.outputs:out>
+        float inputs:opacityThreshold
+        token outputs:out
+        float2 ui:nodegraph:node:pos = (396.83093, -143.07405)
+        int ui:nodegraph:node:stackingOrder = 704
+    }
+
+    def Shader "Multiply"
+    {
+        uniform token info:id = "ND_multiply_float"
+        float inputs:in1.connect = </ShaderFog/SmoothStep.outputs:out>
+        float inputs:in2.connect = </ShaderFog.inputs:SideFogOpacity>
+        float outputs:out
+        float2 ui:nodegraph:node:pos = (175.91585, -87.038826)
+        int ui:nodegraph:node:stackingOrder = 774
+    }
+
+    def Scope "Group" (
+        kind = "group"
+    )
+    {
+        string ui:group:annotation = "UV.y encodes height."
+        string ui:group:annotationDescription = "smoothly remap from 0...1 to 1...0"
+        string[] ui:group:members = ["p:Separate2", "p:TextureCoordinates", "p:SmoothStep"]
+    }
+
+    def Shader "TextureCoordinates"
+    {
+        uniform token info:id = "ND_texcoord_vector2"
+        float2 outputs:out
+        float2 ui:nodegraph:node:pos = (-589.0672, -159.35521)
+        int ui:nodegraph:node:stackingOrder = 843
+    }
+
+    def Shader "Separate2"
+    {
+        uniform token info:id = "ND_separate2_vector2"
+        float2 inputs:in.connect = </ShaderFog/TextureCoordinates.outputs:out>
+        float outputs:outx
+        float outputs:outy
+        float2 ui:nodegraph:node:pos = (-378.59164, -159.76382)
+        int ui:nodegraph:node:stackingOrder = 843
+    }
+}
+

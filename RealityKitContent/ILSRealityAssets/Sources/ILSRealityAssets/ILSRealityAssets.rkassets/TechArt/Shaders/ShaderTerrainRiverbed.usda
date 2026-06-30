@@ -1,0 +1,1096 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "Reality Composer Pro Version 2.0 (448.0.16.0.3)"
+    }
+    defaultPrim = ""
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Material "ShaderTerrainRiverbed"
+{
+    reorder nameChildren = ["PBRSurface", "Multiply_2", "SampleNormal", "SampleRoughnessAo", "SampleDiffuse", "Overlay", "CloudNoise", "GroundFog", "Dot", "Add", "Dot_1", "ComputeUVOffset"]
+    float inputs:aoScale = 1 (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-661.4978, -96.209785)
+                int stackingOrderInSubgraph = 3260
+            }
+        }
+    )
+    asset inputs:baseColor_ao (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-631.1078, -198.2182)
+                int stackingOrderInSubgraph = 3261
+            }
+        }
+    )
+    color3f inputs:CloudColor = (0.00898728, 0.07719416, 0.20158617) (
+        colorSpace = "srgb_displayp3"
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-175.15501, -413.36005)
+                int stackingOrderInSubgraph = 2874
+            }
+        }
+    )
+    bool inputs:CloudNoise = 0 (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-333.0524, -299.35336)
+                int stackingOrderInSubgraph = 2900
+            }
+        }
+    )
+    asset inputs:flowmap (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-1318.6797, -286.9413)
+                int stackingOrderInSubgraph = 3162
+            }
+        }
+    )
+    float2 inputs:flowmapScale = (0, 0) (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-1335.6235, -223.37852)
+                int stackingOrderInSubgraph = 3151
+            }
+        }
+    )
+    float inputs:flowmapSpeed = 0 (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-1343.352, -158.43495)
+                int stackingOrderInSubgraph = 3151
+            }
+        }
+    )
+    float inputs:flowmapStrength = 0 (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-1346.9956, -97.949615)
+                int stackingOrderInSubgraph = 3151
+            }
+        }
+    )
+    color3f inputs:FogColorLower = (0, 0, 0) (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-697.84357, -286.6365)
+                int stackingOrderInSubgraph = 3012
+            }
+        }
+    )
+    color3f inputs:FogColorUpper = (0, 0, 0) (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-694.04614, -354.1498)
+                int stackingOrderInSubgraph = 3012
+            }
+        }
+    )
+    float inputs:FogExponent = 4 (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-698.03925, -494.8239)
+                int stackingOrderInSubgraph = 3012
+            }
+        }
+    )
+    float2 inputs:FogMinMaxHeight = (0.129, 0.347) (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-708.6007, -431.60965)
+                int stackingOrderInSubgraph = 3012
+            }
+        }
+    )
+    bool inputs:GroundFog = 0 (
+        colorSpace = ""
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-700.39984, -561.875)
+                int stackingOrderInSubgraph = 3012
+            }
+        }
+    )
+    asset inputs:normal_roughness (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-560.0153, 203.05641)
+                int stackingOrderInSubgraph = 3322
+            }
+        }
+    )
+    token outputs:mtlx:surface.connect = </ShaderTerrainRiverbed/PBRSurface.outputs:out>
+    token outputs:realitykit:vertex
+    float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (513.918, -41.597607)
+    int ui:nodegraph:realitykit:subgraphOutputs:stackingOrder = 539
+
+    def Shader "PBRSurface"
+    {
+        uniform token info:id = "ND_realitykit_pbr_surfaceshader"
+        float inputs:ambientOcclusion.connect = </ShaderTerrainRiverbed/SampleDiffuseAo.outputs:ao>
+        color3f inputs:baseColor.connect = </ShaderTerrainRiverbed/Overlay.outputs:out>
+        float inputs:clearcoat
+        float3 inputs:clearcoatNormal
+        float inputs:clearcoatRoughness
+        color3f inputs:emissiveColor.connect = </ShaderTerrainRiverbed/Dot.outputs:out>
+        bool inputs:hasPremultipliedAlpha
+        float inputs:metallic
+        float3 inputs:normal.connect = </ShaderTerrainRiverbed/SampleNormalRoughness.outputs:Normal>
+        float inputs:opacity
+        float inputs:opacityThreshold
+        float inputs:roughness.connect = </ShaderTerrainRiverbed/SampleNormalRoughness.outputs:roughness>
+        float inputs:specular
+        token outputs:out
+        float2 ui:nodegraph:node:pos = (258.34402, 67.94552)
+        int ui:nodegraph:node:stackingOrder = 539
+    }
+
+    def Shader "Overlay"
+    {
+        uniform token info:id = "ND_overlay_color3"
+        color3f inputs:bg.connect = </ShaderTerrainRiverbed/SampleDiffuseAo.outputs:Diffuse>
+        color3f inputs:fg = (0.00898728, 0.07719416, 0.20158617) (
+            colorSpace = "srgb_displayp3"
+        )
+        color3f inputs:fg.connect = </ShaderTerrainRiverbed.inputs:CloudColor>
+        float inputs:mix.connect = </ShaderTerrainRiverbed/CloudNoise.outputs:CloudNoise>
+        color3f outputs:out
+        float2 ui:nodegraph:node:pos = (40.791317, -306.5117)
+        int ui:nodegraph:node:stackingOrder = 2898
+    }
+
+    def NodeGraph "CloudNoise"
+    {
+        bool inputs:Enabled = 1 (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (606.5792, -635.73914)
+                    int stackingOrderInSubgraph = 2910
+                }
+            }
+        )
+        bool inputs:Enabled.connect = </ShaderTerrainRiverbed.inputs:CloudNoise>
+        float outputs:CloudNoise (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (374.42136, -524.0636)
+                    int stackingOrderInSubgraph = 2528
+                }
+            }
+        )
+        float outputs:CloudNoise.connect = </ShaderTerrainRiverbed/CloudNoise/IfEqual.outputs:out>
+        float2 ui:nodegraph:node:pos = (-168.67677, -312.91406)
+        int ui:nodegraph:node:stackingOrder = 2875
+        float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (966.3293, -682.4606)
+        int ui:nodegraph:realitykit:subgraphOutputs:stackingOrder = 2910
+
+        def Shader "Time_1"
+        {
+            uniform token info:id = "ND_time_float"
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-756.76245, -385.12064)
+            int ui:nodegraph:node:stackingOrder = 2527
+        }
+
+        def Shader "Position_3"
+        {
+            uniform token info:id = "ND_position_vector3"
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-1054.8818, -571.4705)
+            int ui:nodegraph:node:stackingOrder = 2592
+        }
+
+        def Shader "Multiply_7"
+        {
+            uniform token info:id = "ND_multiply_vector2"
+            float2 inputs:in1.connect = </ShaderTerrainRiverbed/CloudNoise/Combine2_2.outputs:out>
+            float2 inputs:in2 = (0.01, 0.01)
+            float2 outputs:out
+            float2 ui:nodegraph:node:pos = (-182.91249, -684.97327)
+            int ui:nodegraph:node:stackingOrder = 2589
+            string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["outputs:out"]
+        }
+
+        def Shader "Multiply_5"
+        {
+            uniform token info:id = "ND_multiply_vector2"
+            float2 inputs:in1.connect = </ShaderTerrainRiverbed/CloudNoise/Combine2_1.outputs:out>
+            float2 inputs:in2 = (0.02, 0.06)
+            float2 outputs:out
+            float2 ui:nodegraph:node:pos = (-163.88704, -430.9023)
+            int ui:nodegraph:node:stackingOrder = 2598
+        }
+
+        def Shader "Combine2_2"
+        {
+            uniform token info:id = "ND_combine2_vector2"
+            float inputs:in1.connect = </ShaderTerrainRiverbed/CloudNoise/Add_3.outputs:out>
+            float inputs:in2.connect = </ShaderTerrainRiverbed/CloudNoise/Separate3_3.outputs:outz>
+            float2 outputs:out
+            float2 ui:nodegraph:node:pos = (-360.10416, -694.30695)
+            int ui:nodegraph:node:stackingOrder = 2527
+        }
+
+        def Shader "Add"
+        {
+            uniform token info:id = "ND_add_float"
+            float inputs:in1.connect = </ShaderTerrainRiverbed/CloudNoise/Remap_1.outputs:out>
+            float inputs:in2.connect = </ShaderTerrainRiverbed/CloudNoise/Remap.outputs:out>
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (594.5032, -544.1168)
+            int ui:nodegraph:node:stackingOrder = 2819
+        }
+
+        def Shader "Separate3_3"
+        {
+            uniform token info:id = "ND_separate3_vector3"
+            float3 inputs:in.connect = </ShaderTerrainRiverbed/CloudNoise/Multiply.outputs:out>
+            float outputs:outx
+            float outputs:outy
+            float outputs:outz
+            float2 ui:nodegraph:node:pos = (-663.0998, -705.3558)
+            int ui:nodegraph:node:stackingOrder = 2593
+        }
+
+        def Shader "Time_2"
+        {
+            uniform token info:id = "ND_time_float"
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-740.5318, -637.2294)
+            int ui:nodegraph:node:stackingOrder = 2527
+        }
+
+        def Shader "Add_2"
+        {
+            uniform token info:id = "ND_add_float"
+            float inputs:in1.connect = </ShaderTerrainRiverbed/CloudNoise/Separate3_2.outputs:outx>
+            float inputs:in2.connect = </ShaderTerrainRiverbed/CloudNoise/Multiply_4.outputs:out>
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-498.41525, -459.91425)
+            int ui:nodegraph:node:stackingOrder = 2527
+        }
+
+        def Shader "Add_3"
+        {
+            uniform token info:id = "ND_add_float"
+            float inputs:in1.connect = </ShaderTerrainRiverbed/CloudNoise/Separate3_3.outputs:outx>
+            float inputs:in2.connect = </ShaderTerrainRiverbed/CloudNoise/Multiply_6.outputs:out>
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-508.43097, -714.9559)
+            int ui:nodegraph:node:stackingOrder = 2527
+        }
+
+        def Shader "Multiply_4"
+        {
+            uniform token info:id = "ND_multiply_float"
+            float inputs:in1.connect = </ShaderTerrainRiverbed/CloudNoise/Time_1.outputs:out>
+            float inputs:in2 = 2
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-617.0175, -376.75412)
+            int ui:nodegraph:node:stackingOrder = 2602
+        }
+
+        def Shader "Combine2_1"
+        {
+            uniform token info:id = "ND_combine2_vector2"
+            float inputs:in1.connect = </ShaderTerrainRiverbed/CloudNoise/Add_2.outputs:out>
+            float inputs:in2.connect = </ShaderTerrainRiverbed/CloudNoise/Separate3_2.outputs:outz>
+            float2 outputs:out
+            float2 ui:nodegraph:node:pos = (-349.4367, -438.66568)
+            int ui:nodegraph:node:stackingOrder = 2527
+        }
+
+        def Shader "Multiply_6"
+        {
+            uniform token info:id = "ND_multiply_float"
+            float inputs:in1.connect = </ShaderTerrainRiverbed/CloudNoise/Time_2.outputs:out>
+            float inputs:in2 = 1
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-609.78766, -626.71857)
+            int ui:nodegraph:node:stackingOrder = 2601
+        }
+
+        def Shader "Separate3_2"
+        {
+            uniform token info:id = "ND_separate3_vector3"
+            float3 inputs:in.connect = </ShaderTerrainRiverbed/CloudNoise/Multiply.outputs:out>
+            float outputs:outx
+            float outputs:outy
+            float outputs:outz
+            float2 ui:nodegraph:node:pos = (-657.72455, -449.26483)
+            int ui:nodegraph:node:stackingOrder = 2527
+        }
+
+        def Shader "Multiply"
+        {
+            uniform token info:id = "ND_multiply_vector3FA"
+            float3 inputs:in1.connect = </ShaderTerrainRiverbed/CloudNoise/Position_3.outputs:out>
+            float inputs:in2 = 10
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-901.57916, -563.4772)
+            int ui:nodegraph:node:stackingOrder = 2599
+            string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["outputs:out"]
+        }
+
+        def Shader "IfEqual"
+        {
+            uniform token info:id = "ND_ifequal_floatB"
+            float inputs:in1.connect = </ShaderTerrainRiverbed/CloudNoise/Add.outputs:out>
+            float inputs:in2
+            bool inputs:value1.connect = </ShaderTerrainRiverbed/CloudNoise.inputs:Enabled>
+            bool inputs:value2 = 1
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (788.922, -623.75244)
+            int ui:nodegraph:node:stackingOrder = 2910
+        }
+
+        def Shader "Image2D"
+        {
+            uniform token info:id = "ND_RealityKitTexture2D_vector4"
+            asset inputs:file = @../Textures/Clouds/CloudNoise.png@
+            bool inputs:no_flip_v = 1
+            int2 inputs:offset
+            float2 inputs:texcoord.connect = </ShaderTerrainRiverbed/CloudNoise/Multiply_7.outputs:out>
+            string inputs:u_wrap_mode = "repeat"
+            string inputs:v_wrap_mode = "repeat"
+            float4 outputs:out
+            float2 ui:nodegraph:node:pos = (25.262169, -1103.1868)
+            int ui:nodegraph:node:stackingOrder = 2595
+            string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["inputs:min_lod_clamp"]
+        }
+
+        def Shader "Image2D_1"
+        {
+            uniform token info:id = "ND_RealityKitTexture2D_vector4"
+            float inputs:bias
+            string inputs:border_color
+            float4 inputs:default
+            float inputs:dynamic_min_lod_clamp
+            asset inputs:file = @../Textures/Clouds/CloudNoise.png@
+            string inputs:mag_filter
+            string inputs:min_filter
+            string inputs:mip_filter
+            bool inputs:no_flip_v = 1
+            int2 inputs:offset
+            float2 inputs:texcoord.connect = </ShaderTerrainRiverbed/CloudNoise/Multiply_5.outputs:out>
+            string inputs:u_wrap_mode = "repeat"
+            string inputs:v_wrap_mode = "repeat"
+            float4 outputs:out
+            float2 ui:nodegraph:node:pos = (11.336146, -356.29294)
+            int ui:nodegraph:node:stackingOrder = 2845
+        }
+
+        def Shader "Separate4"
+        {
+            uniform token info:id = "ND_separate4_vector4"
+            float4 inputs:in.connect = </ShaderTerrainRiverbed/CloudNoise/Image2D.outputs:out>
+            float outputs:outx
+            float outputs:outy
+            float outputs:outz
+            float2 ui:nodegraph:node:pos = (253.3132, -820.31476)
+            int ui:nodegraph:node:stackingOrder = 2615
+        }
+
+        def Shader "Separate4_1"
+        {
+            uniform token info:id = "ND_separate4_vector4"
+            float4 inputs:in.connect = </ShaderTerrainRiverbed/CloudNoise/Image2D_1.outputs:out>
+            float outputs:outx
+            float outputs:outy
+            float2 ui:nodegraph:node:pos = (243.67412, -301.48987)
+            int ui:nodegraph:node:stackingOrder = 2841
+        }
+
+        def Shader "Remap"
+        {
+            uniform token info:id = "ND_remap_float"
+            float inputs:in.connect = </ShaderTerrainRiverbed/CloudNoise/Separate4_1.outputs:outx>
+            float inputs:inhigh = 2
+            float inputs:inlow = 0.35
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (417.81958, -351.39783)
+            int ui:nodegraph:node:stackingOrder = 2841
+        }
+
+        def Shader "Remap_1"
+        {
+            uniform token info:id = "ND_remap_float"
+            float inputs:in.connect = </ShaderTerrainRiverbed/CloudNoise/Separate4.outputs:outx>
+            float inputs:inhigh = 2
+            float inputs:inlow = 0.3
+            float inputs:outhigh
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (410.67117, -813.2099)
+            int ui:nodegraph:node:stackingOrder = 2617
+        }
+    }
+
+    def NodeGraph "GroundFog"
+    {
+        bool inputs:Enabled (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (616.37445, 228.19176)
+                    int stackingOrderInSubgraph = 2591
+                }
+            }
+        )
+        bool inputs:Enabled.connect = </ShaderTerrainRiverbed.inputs:GroundFog>
+        float inputs:FogExponent = 2 (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (331.9974, 88.2689)
+                    int stackingOrderInSubgraph = 2731
+                }
+            }
+        )
+        float inputs:FogExponent.connect = </ShaderTerrainRiverbed.inputs:FogExponent>
+        float2 inputs:FogMinMaxHeight = (0.129, 0.347) (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-182.29399, -35.262753)
+                    int stackingOrderInSubgraph = 2730
+                }
+            }
+        )
+        float2 inputs:FogMinMaxHeight.connect = </ShaderTerrainRiverbed.inputs:FogMinMaxHeight>
+        color3f inputs:FogUpperColor (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (559.1088, -94.14534)
+                    int stackingOrderInSubgraph = 2664
+                }
+            }
+        )
+        color3f inputs:FogUpperColor.connect = </ShaderTerrainRiverbed.inputs:FogColorUpper>
+        color3f inputs:ForLowerColor (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (551.0167, -151.3968)
+                    int stackingOrderInSubgraph = 2661
+                }
+            }
+        )
+        color3f inputs:ForLowerColor.connect = </ShaderTerrainRiverbed.inputs:FogColorLower>
+        color3f outputs:FogColor (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (747.71967, 131.5449)
+                    int stackingOrderInSubgraph = 2594
+                }
+            }
+        )
+        color3f outputs:FogColor.connect = </ShaderTerrainRiverbed/GroundFog/Multiply_1.outputs:out>
+        float2 ui:nodegraph:node:pos = (-430.70886, -449.77173)
+        int ui:nodegraph:node:stackingOrder = 3255
+        float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (1101.1736, 91.98447)
+        int ui:nodegraph:realitykit:subgraphOutputs:stackingOrder = 2595
+
+        def Shader "Mix"
+        {
+            uniform token info:id = "ND_mix_color3"
+            color3f inputs:bg = (0.009, 0.07719416, 0.20158617) (
+                colorSpace = "srgb_displayp3"
+            )
+            color3f inputs:bg.connect = </ShaderTerrainRiverbed/GroundFog.inputs:FogUpperColor>
+            color3f inputs:fg = (0.21428818, 0.33091024, 0.53803664) (
+                colorSpace = "srgb_displayp3"
+            )
+            color3f inputs:fg.connect = </ShaderTerrainRiverbed/GroundFog.inputs:ForLowerColor>
+            float inputs:mix.connect = </ShaderTerrainRiverbed/GroundFog/Power.outputs:out>
+            color3f outputs:out
+            float2 ui:nodegraph:node:pos = (778.001, -42.211525)
+            int ui:nodegraph:node:stackingOrder = 2567
+        }
+
+        def Shader "Position"
+        {
+            uniform token info:id = "ND_position_vector3"
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-223.44356, -124.16461)
+            int ui:nodegraph:node:stackingOrder = 2726
+        }
+
+        def Shader "Multiply_1"
+        {
+            uniform token info:id = "ND_multiply_color3FA"
+            color3f inputs:in1.connect = </ShaderTerrainRiverbed/GroundFog/Mix.outputs:out>
+            float inputs:in2.connect = </ShaderTerrainRiverbed/GroundFog/IfEqual.outputs:out>
+            color3f outputs:out
+            float2 ui:nodegraph:node:pos = (922.2406, 119.29891)
+            int ui:nodegraph:node:stackingOrder = 2593
+        }
+
+        def Shader "Separate3"
+        {
+            uniform token info:id = "ND_separate3_vector3"
+            float3 inputs:in.connect = </ShaderTerrainRiverbed/GroundFog/Position.outputs:out>
+            float outputs:outx
+            float outputs:outy
+            float outputs:outz
+            float2 ui:nodegraph:node:pos = (-33.566036, -123.85802)
+            int ui:nodegraph:node:stackingOrder = 2726
+        }
+
+        def Shader "IfEqual"
+        {
+            uniform token info:id = "ND_ifequal_floatB"
+            float inputs:in1 = 1
+            float inputs:in2
+            bool inputs:value1.connect = </ShaderTerrainRiverbed/GroundFog.inputs:Enabled>
+            bool inputs:value2 = 1
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (776.1185, 242.01)
+            int ui:nodegraph:node:stackingOrder = 2591
+        }
+
+        def Shader "Remap"
+        {
+            uniform token info:id = "ND_remap_float"
+            float inputs:in.connect = </ShaderTerrainRiverbed/GroundFog/Separate3.outputs:outy>
+            float inputs:inhigh.connect = </ShaderTerrainRiverbed/GroundFog/Separate2.outputs:outy>
+            float inputs:inlow.connect = </ShaderTerrainRiverbed/GroundFog/Separate2.outputs:outx>
+            float inputs:outhigh = 0
+            float inputs:outlow = 1
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (198.02222, -103.220856)
+            int ui:nodegraph:node:stackingOrder = 2726
+        }
+
+        def Shader "Separate2"
+        {
+            uniform token info:id = "ND_separate2_vector2"
+            float2 inputs:in.connect = </ShaderTerrainRiverbed/GroundFog.inputs:FogMinMaxHeight>
+            float outputs:outx
+            float outputs:outy
+            float2 ui:nodegraph:node:pos = (12.51778, -35.463634)
+            int ui:nodegraph:node:stackingOrder = 2726
+        }
+
+        def Shader "Clamp"
+        {
+            uniform token info:id = "ND_clamp_float"
+            float inputs:high
+            float inputs:in.connect = </ShaderTerrainRiverbed/GroundFog/Remap.outputs:out>
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (358.3892, -27.399866)
+            int ui:nodegraph:node:stackingOrder = 2726
+        }
+
+        def Shader "Power"
+        {
+            uniform token info:id = "ND_power_float"
+            float inputs:in1.connect = </ShaderTerrainRiverbed/GroundFog/Clamp.outputs:out>
+            float inputs:in2.connect = </ShaderTerrainRiverbed/GroundFog.inputs:FogExponent>
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (548.619, 40.206806)
+            int ui:nodegraph:node:stackingOrder = 2729
+        }
+    }
+
+    def Shader "Dot"
+    {
+        uniform token info:id = "ND_dot_color3"
+        color3f inputs:in.connect = </ShaderTerrainRiverbed/GroundFog.outputs:FogColor>
+        color3f outputs:out
+        float2 ui:nodegraph:node:pos = (-64.14463, -14.835622)
+        int ui:nodegraph:node:stackingOrder = 3325
+    }
+
+    def Shader "Add" (
+        active = false
+    )
+    {
+        uniform token info:id = "ND_add_color3"
+        color3f inputs:in1.connect = </Terrain/Dot.outputs:out>
+        color3f inputs:in2.connect = </Terrain/SkyLight.outputs:ambientColor>
+        color3f outputs:out
+        float2 ui:nodegraph:node:pos = (-61.403618, 48.34353)
+        int ui:nodegraph:node:stackingOrder = 3045
+    }
+
+    def NodeGraph "ComputeUVOffset" (
+        active = true
+    )
+    {
+        asset inputs:flowmap = @../Textures/River/wave_Utility-Raw.png@ (
+            colorSpace = "lin_srgb"
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-2350.4167, -110.30732)
+                    int stackingOrderInSubgraph = 2326
+                }
+            }
+        )
+        asset inputs:flowmap.connect = </ShaderTerrainRiverbed.inputs:flowmap>
+        float2 inputs:flowmapScale = (1, 0.5) (
+            colorSpace = ""
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-2814.4463, -100.85937)
+                    int stackingOrderInSubgraph = 2198
+                }
+            }
+        )
+        float2 inputs:flowmapScale.connect = </ShaderTerrainRiverbed.inputs:flowmapScale>
+        float inputs:flowmapSpeed = -0.2 (
+            colorSpace = ""
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-3054.8896, 33.818604)
+                    int stackingOrderInSubgraph = 2198
+                }
+            }
+        )
+        float inputs:flowmapSpeed.connect = </ShaderTerrainRiverbed.inputs:flowmapSpeed>
+        float inputs:flowmapStrength1 = 0.1 (
+            colorSpace = ""
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-1909.7759, 82.74203)
+                    int stackingOrderInSubgraph = 2326
+                }
+            }
+        )
+        float inputs:flowmapStrength1.connect = </ShaderTerrainRiverbed.inputs:flowmapStrength>
+        float outputs:mask (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-982.68494, 167.29097)
+                    int stackingOrderInSubgraph = 2397
+                }
+            }
+        )
+        float outputs:mask.connect = </ShaderTerrainRiverbed/ComputeUVOffset/Power_1.outputs:out>
+        float2 outputs:uv (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-39, 94.5)
+                    int stackingOrderInSubgraph = 3
+                }
+            }
+        )
+        float2 outputs:uv.connect = </ShaderTerrainRiverbed/ComputeUVOffset/Add_1.outputs:out>
+        float2 ui:nodegraph:node:pos = (-1101.0437, -223.55177)
+        int ui:nodegraph:node:stackingOrder = 3326
+        string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["inputs:enabled"]
+        float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (-563.9984, 153.49864)
+        int ui:nodegraph:realitykit:subgraphOutputs:stackingOrder = 2739
+
+        def Shader "TextureCoordinates"
+        {
+            uniform token info:id = "ND_texcoord_vector2"
+            int inputs:index
+            float2 outputs:out
+            float2 ui:nodegraph:node:pos = (-880.24927, 56.544067)
+            int ui:nodegraph:node:stackingOrder = 2392
+        }
+
+        def Shader "Add_2"
+        {
+            uniform token info:id = "ND_add_vector2"
+            float2 inputs:in1.connect = </ShaderTerrainRiverbed/ComputeUVOffset/Multiply_6.outputs:out>
+            float2 inputs:in2.connect = </ShaderTerrainRiverbed/ComputeUVOffset/Combine2_2.outputs:out>
+            float2 outputs:out
+            float2 ui:nodegraph:node:pos = (-2505.3682, -72.69423)
+            int ui:nodegraph:node:stackingOrder = 2198
+        }
+
+        def Shader "Time_1"
+        {
+            uniform token info:id = "ND_time_float"
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-3023.6465, -30.054684)
+            int ui:nodegraph:node:stackingOrder = 2198
+        }
+
+        def Shader "Multiply_6"
+        {
+            uniform token info:id = "ND_multiply_vector2"
+            float2 inputs:in1.connect = </ShaderTerrainRiverbed/ComputeUVOffset/PrimvarReader.outputs:out>
+            float2 inputs:in2.connect = </ShaderTerrainRiverbed/ComputeUVOffset.inputs:flowmapScale>
+            float2 outputs:out
+            float2 ui:nodegraph:node:pos = (-2637.901, -136.9209)
+            int ui:nodegraph:node:stackingOrder = 2198
+        }
+
+        def Shader "Image_1"
+        {
+            uniform token info:id = "ND_image_vector3"
+            float3 inputs:default
+            asset inputs:file.connect = </ShaderTerrainRiverbed/ComputeUVOffset.inputs:flowmap>
+            string inputs:filtertype
+            float2 inputs:texcoord.connect = </ShaderTerrainRiverbed/ComputeUVOffset/Add_2.outputs:out>
+            string inputs:uaddressmode
+            string inputs:vaddressmode
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-2131.07, -78.09373)
+            int ui:nodegraph:node:stackingOrder = 2326
+        }
+
+        def Shader "NormalMapDecode"
+        {
+            uniform token info:id = "ND_normal_map_decode"
+            float3 inputs:in.connect = </ShaderTerrainRiverbed/ComputeUVOffset/Image_1.outputs:out>
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-1915.3159, -11.326575)
+            int ui:nodegraph:node:stackingOrder = 2326
+        }
+
+        def Shader "Mix"
+        {
+            uniform token info:id = "ND_mix_vector3"
+            float3 inputs:bg = (0, 0, 1)
+            float3 inputs:fg.connect = </ShaderTerrainRiverbed/ComputeUVOffset/NormalMapDecode.outputs:out>
+            float inputs:mix.connect = </ShaderTerrainRiverbed/ComputeUVOffset.inputs:flowmapStrength1>
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-1690.2192, 28.62771)
+            int ui:nodegraph:node:stackingOrder = 2326
+        }
+
+        def Shader "Multiply_5"
+        {
+            uniform token info:id = "ND_multiply_float"
+            float inputs:in1.connect = </ShaderTerrainRiverbed/ComputeUVOffset/Time_1.outputs:out>
+            float inputs:in2.connect = </ShaderTerrainRiverbed/ComputeUVOffset.inputs:flowmapSpeed>
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-2872.7273, 0.35119635)
+            int ui:nodegraph:node:stackingOrder = 2198
+        }
+
+        def Shader "Combine2_2"
+        {
+            uniform token info:id = "ND_combine2_vector2"
+            float inputs:in1.connect = None
+            float inputs:in2.connect = </ShaderTerrainRiverbed/ComputeUVOffset/Multiply_5.outputs:out>
+            float2 outputs:out
+            float2 ui:nodegraph:node:pos = (-2708.6494, -9.442993)
+            int ui:nodegraph:node:stackingOrder = 2198
+        }
+
+        def Shader "Separate3_1"
+        {
+            uniform token info:id = "ND_separate3_vector3"
+            float3 inputs:in.connect = </ShaderTerrainRiverbed/ComputeUVOffset/Mix.outputs:out>
+            float outputs:outx
+            float outputs:outy
+            float outputs:outz
+            float2 ui:nodegraph:node:pos = (-1463.2898, -12.51766)
+            int ui:nodegraph:node:stackingOrder = 2326
+        }
+
+        def Shader "Combine2"
+        {
+            uniform token info:id = "ND_combine2_vector2"
+            float inputs:in1.connect = </ShaderTerrainRiverbed/ComputeUVOffset/Separate3_1.outputs:outx>
+            float inputs:in2.connect = </ShaderTerrainRiverbed/ComputeUVOffset/Separate3_1.outputs:outy>
+            float2 outputs:out
+            float2 ui:nodegraph:node:pos = (-1264.9087, -21.198822)
+            int ui:nodegraph:node:stackingOrder = 2326
+        }
+
+        def Shader "Multiply_1"
+        {
+            uniform token info:id = "ND_multiply_vector2FA"
+            float2 inputs:in1.connect = </ShaderTerrainRiverbed/ComputeUVOffset/Combine2.outputs:out>
+            float inputs:in2.connect = </ShaderTerrainRiverbed/ComputeUVOffset/Power_1.outputs:out>
+            float2 outputs:out
+            float2 ui:nodegraph:node:pos = (-1060.6478, 100.16698)
+            int ui:nodegraph:node:stackingOrder = 2737
+        }
+
+        def Shader "Add_1"
+        {
+            uniform token info:id = "ND_add_vector2"
+            float2 inputs:in1.connect = </ShaderTerrainRiverbed/ComputeUVOffset/TextureCoordinates.outputs:out>
+            float2 inputs:in2.connect = </ShaderTerrainRiverbed/ComputeUVOffset/Multiply_1.outputs:out>
+            float2 outputs:out
+            float2 ui:nodegraph:node:pos = (-713.234, 91.558014)
+            int ui:nodegraph:node:stackingOrder = 2392
+        }
+
+        def Shader "PrimvarReader"
+        {
+            uniform token info:id = "ND_UsdPrimvarReader_vector2"
+            float2 inputs:fallback
+            string inputs:varname = "uv2"
+            float2 outputs:out
+            float2 ui:nodegraph:node:pos = (-2827.1887, -217.45891)
+            int ui:nodegraph:node:stackingOrder = 2399
+        }
+
+        def Scope "Group2" (
+            kind = "group"
+        )
+        {
+            string ui:group:annotation = "sample riverbed uv stored in uv2"
+            string ui:group:annotationDescription = "offset over time"
+            string[] ui:group:members = ["i:inputs:flowmapSpeed", "p:PrimvarReader", "p:Combine2_2", "p:Add_2", "p:Multiply_5", "p:Multiply_6", "i:inputs:flowmapScale", "p:Time_1"]
+        }
+
+        def Scope "Group3" (
+            kind = "group"
+        )
+        {
+            string ui:group:annotation = "make uv offset"
+            string ui:group:annotationDescription = ""
+            string[] ui:group:members = ["p:Separate3_1", "i:inputs:flowmapStrength1", "p:Image_1", "i:inputs:flowmap", "p:Combine2", "p:Mix", "p:NormalMapDecode"]
+        }
+
+        def Shader "Power_1"
+        {
+            uniform token info:id = "ND_power_float"
+            float inputs:in1.connect = </ShaderTerrainRiverbed/ComputeUVOffset/Image.outputs:out>
+            float inputs:in2 = 2
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-1248.9076, 178.46225)
+            int ui:nodegraph:node:stackingOrder = 2734
+        }
+
+        def Shader "Image"
+        {
+            uniform token info:id = "ND_image_float"
+            asset inputs:file = @../Textures/River/RiverMask.png@
+            string inputs:filtertype
+            string inputs:vaddressmode
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-1463.6036, 346.62518)
+            int ui:nodegraph:node:stackingOrder = 2734
+        }
+    }
+
+    def Shader "Dot_2"
+    {
+        uniform token info:id = "ND_dot_vector2"
+        float2 inputs:in.connect = </ShaderTerrainRiverbed/ComputeUVOffset.outputs:uv>
+        float2 outputs:out
+        float2 ui:nodegraph:node:pos = (-629.5781, -154.51172)
+        int ui:nodegraph:node:stackingOrder = 3105
+    }
+
+    def Shader "Dot_4"
+    {
+        uniform token info:id = "ND_dot_vector2"
+        float2 inputs:in.connect = </ShaderTerrainRiverbed/ComputeUVOffset.outputs:uv>
+        float2 outputs:out
+        float2 ui:nodegraph:node:pos = (-927.70026, 236.36478)
+        int ui:nodegraph:node:stackingOrder = 3154
+    }
+
+    def NodeGraph "SampleDiffuseAo"
+    {
+        float inputs:aoScale = 0 (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (595.24786, 448.06482)
+                    int stackingOrderInSubgraph = 840
+                }
+            }
+        )
+        float inputs:aoScale.connect = </ShaderTerrainRiverbed.inputs:aoScale>
+        asset inputs:DiffuseAoMap (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (104.640625, 68.0625)
+                    int stackingOrderInSubgraph = 838
+                }
+            }
+        )
+        asset inputs:DiffuseAoMap.connect = </ShaderTerrainRiverbed.inputs:baseColor_ao>
+        float2 inputs:uv = (0, 0) (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (62.069866, 231.0967)
+                    int stackingOrderInSubgraph = 838
+                }
+            }
+        )
+        float2 inputs:uv.connect = </ShaderTerrainRiverbed/Dot_2.outputs:out>
+        float outputs:ao = 1 (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-112.06822, -32.991535)
+                    int stackingOrderInSubgraph = 821
+                }
+            }
+        )
+        float outputs:ao.connect = </ShaderTerrainRiverbed/SampleDiffuseAo/Mix.outputs:out>
+        color3f outputs:Diffuse (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (385.5, 243.5)
+                    int stackingOrderInSubgraph = 819
+                }
+            }
+        )
+        color3f outputs:Diffuse.connect = </ShaderTerrainRiverbed/SampleDiffuseAo/Multiply.outputs:out>
+        float2 ui:nodegraph:node:pos = (-366.23685, -71.86572)
+        int ui:nodegraph:node:stackingOrder = 3327
+        string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["outputs:Diffuse"]
+        float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (1186.9883, 205.36105)
+        int ui:nodegraph:realitykit:subgraphOutputs:stackingOrder = 838
+
+        def Shader "Image2D"
+        {
+            uniform token info:id = "ND_RealityKitTexture2D_color4"
+            float inputs:bias
+            color4f inputs:default
+            float inputs:dynamic_min_lod_clamp
+            asset inputs:file.connect = </ShaderTerrainRiverbed/SampleDiffuseAo.inputs:DiffuseAoMap>
+            float inputs:min_lod_clamp
+            string inputs:mip_filter = "nearest"
+            bool inputs:no_flip_v = 1
+            int2 inputs:offset
+            float2 inputs:texcoord.connect = </ShaderTerrainRiverbed/SampleDiffuseAo.inputs:uv>
+            color4f outputs:out
+            float2 ui:nodegraph:node:pos = (317.07272, 200.1732)
+            int ui:nodegraph:node:stackingOrder = 820
+            string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["inputs:border_color"]
+        }
+
+        def Shader "Separate4"
+        {
+            uniform token info:id = "ND_separate4_color4"
+            color4f inputs:in.connect = </ShaderTerrainRiverbed/SampleDiffuseAo/Image2D.outputs:out>
+            float outputs:outa
+            float outputs:outb
+            float outputs:outg
+            float outputs:outr
+            float2 ui:nodegraph:node:pos = (533.06525, 255.2155)
+            int ui:nodegraph:node:stackingOrder = 823
+        }
+
+        def Shader "Combine3"
+        {
+            uniform token info:id = "ND_combine3_color3"
+            float inputs:in1.connect = </ShaderTerrainRiverbed/SampleDiffuseAo/Separate4.outputs:outr>
+            float inputs:in2.connect = </ShaderTerrainRiverbed/SampleDiffuseAo/Separate4.outputs:outg>
+            float inputs:in3.connect = </ShaderTerrainRiverbed/SampleDiffuseAo/Separate4.outputs:outb>
+            color3f outputs:out
+            float2 ui:nodegraph:node:pos = (762.6752, 228.67389)
+            int ui:nodegraph:node:stackingOrder = 824
+            string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["inputs:in2"]
+        }
+
+        def Shader "Multiply"
+        {
+            uniform token info:id = "ND_multiply_color3FA"
+            color3f inputs:in1.connect = </ShaderTerrainRiverbed/SampleDiffuseAo/Combine3.outputs:out>
+            float inputs:in2.connect = </ShaderTerrainRiverbed/SampleDiffuseAo/Mix.outputs:out>
+            color3f outputs:out
+            float2 ui:nodegraph:node:pos = (919.40375, 239.27217)
+            int ui:nodegraph:node:stackingOrder = 836
+        }
+
+        def Shader "Mix"
+        {
+            uniform token info:id = "ND_mix_float"
+            float inputs:bg
+            float inputs:fg.connect = </ShaderTerrainRiverbed/SampleDiffuseAo/Separate4.outputs:outa>
+            float inputs:mix.connect = </ShaderTerrainRiverbed/SampleDiffuseAo.inputs:aoScale>
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (797.2309, 418.28717)
+            int ui:nodegraph:node:stackingOrder = 834
+        }
+    }
+
+    def NodeGraph "SampleNormalRoughness"
+    {
+        asset inputs:NormalRoughnessMap (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (27.963911, 73.1087)
+                    int stackingOrderInSubgraph = 766
+                }
+            }
+        )
+        asset inputs:NormalRoughnessMap.connect = </ShaderTerrainRiverbed.inputs:normal_roughness>
+        float2 inputs:uv = (0, 0) (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (54.790455, 270.00824)
+                    int stackingOrderInSubgraph = 769
+                }
+            }
+        )
+        float2 inputs:uv.connect = </ShaderTerrainRiverbed/Dot_4.outputs:out>
+        float3 outputs:Normal (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (693, 229.5)
+                    int stackingOrderInSubgraph = 761
+                }
+            }
+        )
+        float3 outputs:Normal.connect = </ShaderTerrainRiverbed/SampleNormalRoughness/NormalMapDecode.outputs:out>
+        float outputs:roughness (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-112.06822, -32.991535)
+                    int stackingOrderInSubgraph = 765
+                }
+            }
+        )
+        float outputs:roughness.connect = </ShaderTerrainRiverbed/SampleNormalRoughness/Separate4.outputs:outw>
+        float2 ui:nodegraph:node:pos = (-328.27063, 222.99574)
+        int ui:nodegraph:node:stackingOrder = 3322
+        string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["inputs:NormalMap", "inputs:NormalRoughnessMap"]
+        float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (1001.5682, 350.0174)
+        int ui:nodegraph:realitykit:subgraphOutputs:stackingOrder = 769
+
+        def Shader "NormalMapDecode"
+        {
+            uniform token info:id = "ND_normal_map_decode"
+            float3 inputs:in.connect = </ShaderTerrainRiverbed/SampleNormalRoughness/Convert.outputs:out>
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (772.3711, 176.55078)
+            int ui:nodegraph:node:stackingOrder = 764
+        }
+
+        def Shader "Image2D_2"
+        {
+            uniform token info:id = "ND_RealityKitTexture2D_vector4"
+            float inputs:bias
+            string inputs:border_color
+            float4 inputs:default
+            float inputs:dynamic_min_lod_clamp
+            asset inputs:file.connect = </ShaderTerrainRiverbed/SampleNormalRoughness.inputs:NormalRoughnessMap>
+            string inputs:mip_filter = "nearest"
+            bool inputs:no_flip_v = 1
+            int2 inputs:offset
+            float2 inputs:texcoord.connect = </ShaderTerrainRiverbed/SampleNormalRoughness.inputs:uv>
+            string inputs:u_wrap_mode
+            string inputs:v_wrap_mode
+            float4 outputs:out
+            float2 ui:nodegraph:node:pos = (338, 190.5)
+            int ui:nodegraph:node:stackingOrder = 765
+        }
+
+        def Shader "Convert"
+        {
+            uniform token info:id = "ND_convert_vector4_vector3"
+            float4 inputs:in.connect = </ShaderTerrainRiverbed/SampleNormalRoughness/Image2D_2.outputs:out>
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (578.75, 190.5)
+            int ui:nodegraph:node:stackingOrder = 759
+        }
+
+        def Shader "Separate4"
+        {
+            uniform token info:id = "ND_separate4_vector4"
+            float4 inputs:in.connect = </ShaderTerrainRiverbed/SampleNormalRoughness/Image2D_2.outputs:out>
+            float outputs:outw
+            float outputs:outy
+            float outputs:outz
+            float2 ui:nodegraph:node:pos = (566.637, 362.28677)
+            int ui:nodegraph:node:stackingOrder = 767
+        }
+    }
+}
+

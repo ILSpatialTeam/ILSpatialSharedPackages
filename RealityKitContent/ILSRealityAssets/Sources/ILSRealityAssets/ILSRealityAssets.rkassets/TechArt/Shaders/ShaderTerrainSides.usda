@@ -1,0 +1,310 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "Reality Composer Pro Version 2.0 (448.0.16.0.3)"
+    }
+    defaultPrim = ""
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Material "ShaderTerrainSides"
+{
+    reorder nameChildren = ["PBRSurface", "Multiply_2", "SampleNormal", "SampleRoughnessAo", "SampleDiffuse", "Overlay", "CloudNoise", "GroundFog", "Dot", "Add", "Dot_1", "ComputeUVOffset"]
+    float inputs:aoScale = 1 (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-439.1963, -165.84428)
+                int stackingOrderInSubgraph = 3332
+            }
+        }
+    )
+    asset inputs:baseColor_Ao (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-455.34802, -91.813675)
+                int stackingOrderInSubgraph = 3332
+            }
+        }
+    )
+    asset inputs:normal_roughness (
+        customData = {
+            dictionary realitykit = {
+                float2 positionInSubgraph = (-629.5295, -17.72452)
+                int stackingOrderInSubgraph = 3256
+            }
+        }
+    )
+    token outputs:mtlx:surface.connect = </ShaderTerrainSides/UnlitSurface.outputs:out>
+    token outputs:realitykit:vertex
+    float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (986.8028, -252.21431)
+    int ui:nodegraph:realitykit:subgraphOutputs:stackingOrder = 3259
+
+    def Shader "Add" (
+        active = false
+    )
+    {
+        uniform token info:id = "ND_add_color3"
+        color3f inputs:in1.connect = </Terrain/Dot.outputs:out>
+        color3f inputs:in2.connect = </Terrain/SkyLight.outputs:ambientColor>
+        color3f outputs:out
+        float2 ui:nodegraph:node:pos = (-61.403618, 48.34353)
+        int ui:nodegraph:node:stackingOrder = 3045
+    }
+
+    def Shader "EnvironmentRadiance"
+    {
+        uniform token info:id = "ND_realitykit_environment_radiance"
+        color3f inputs:baseColor.connect = </ShaderTerrainSides/SampleDiffuseAo.outputs:Diffuse>
+        half inputs:metallic
+        float3 inputs:normal.connect = </ShaderTerrainSides/SampleNormalRoughness.outputs:Normal>
+        half inputs:roughness.connect = </ShaderTerrainSides/Convert.outputs:out>
+        half inputs:specular
+        color3f outputs:diffuseRadiance
+        color3f outputs:specularRadiance
+        float2 ui:nodegraph:node:pos = (192.45334, -287.4216)
+        int ui:nodegraph:node:stackingOrder = 3165
+    }
+
+    def Shader "Convert"
+    {
+        uniform token info:id = "ND_convert_float_half"
+        float inputs:in.connect = </ShaderTerrainSides/SampleNormalRoughness.outputs:roughness>
+        half outputs:out
+        float2 ui:nodegraph:node:pos = (-28.615894, -216.47406)
+        int ui:nodegraph:node:stackingOrder = 3257
+    }
+
+    def Shader "UnlitSurface"
+    {
+        uniform token info:id = "ND_realitykit_unlit_surfaceshader"
+        bool inputs:applyPostProcessToneMap = 1
+        color3f inputs:color.connect = </ShaderTerrainSides/Add_1.outputs:out>
+        bool inputs:hasPremultipliedAlpha
+        float inputs:opacity
+        float inputs:opacityThreshold
+        token outputs:out
+        float2 ui:nodegraph:node:pos = (743.3647, -284.79984)
+        int ui:nodegraph:node:stackingOrder = 3174
+    }
+
+    def Shader "Multiply"
+    {
+        uniform token info:id = "ND_multiply_color3FA"
+        color3f inputs:in1.connect = </ShaderTerrainSides/EnvironmentRadiance.outputs:specularRadiance>
+        float inputs:in2.connect = </ShaderTerrainSides/SampleDiffuseAo.outputs:ao>
+        color3f outputs:out
+        float2 ui:nodegraph:node:pos = (375.83557, -115.67535)
+        int ui:nodegraph:node:stackingOrder = 3263
+    }
+
+    def Shader "Add_1"
+    {
+        uniform token info:id = "ND_add_color3"
+        color3f inputs:in1.connect = </ShaderTerrainSides/EnvironmentRadiance.outputs:diffuseRadiance>
+        color3f inputs:in2.connect = </ShaderTerrainSides/Multiply.outputs:out>
+        color3f outputs:out
+        float2 ui:nodegraph:node:pos = (489.9704, -209.15248)
+        int ui:nodegraph:node:stackingOrder = 3265
+    }
+
+    def NodeGraph "SampleDiffuseAo"
+    {
+        float inputs:aoScale = 0 (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (595.24786, 448.06482)
+                    int stackingOrderInSubgraph = 840
+                }
+            }
+        )
+        float inputs:aoScale.connect = </ShaderTerrainSides.inputs:aoScale>
+        asset inputs:DiffuseAoMap (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (104.640625, 68.0625)
+                    int stackingOrderInSubgraph = 838
+                }
+            }
+        )
+        asset inputs:DiffuseAoMap.connect = </ShaderTerrainSides.inputs:baseColor_Ao>
+        float outputs:ao = 1 (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-112.06822, -32.991535)
+                    int stackingOrderInSubgraph = 821
+                }
+            }
+        )
+        float outputs:ao.connect = </ShaderTerrainSides/SampleDiffuseAo/Mix.outputs:out>
+        color3f outputs:Diffuse (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (385.5, 243.5)
+                    int stackingOrderInSubgraph = 819
+                }
+            }
+        )
+        color3f outputs:Diffuse.connect = </ShaderTerrainSides/SampleDiffuseAo/Multiply.outputs:out>
+        float2 ui:nodegraph:node:pos = (-232.1764, -135.81282)
+        int ui:nodegraph:node:stackingOrder = 3255
+        string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["outputs:Diffuse"]
+        float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (1186.9883, 205.36105)
+        int ui:nodegraph:realitykit:subgraphOutputs:stackingOrder = 838
+
+        def Shader "Image2D"
+        {
+            uniform token info:id = "ND_RealityKitTexture2D_color4"
+            float inputs:bias
+            float inputs:dynamic_min_lod_clamp
+            asset inputs:file.connect = </ShaderTerrainSides/SampleDiffuseAo.inputs:DiffuseAoMap>
+            float inputs:min_lod_clamp
+            string inputs:mip_filter = "nearest"
+            bool inputs:no_flip_v = 1
+            int2 inputs:offset
+            float2 inputs:texcoord
+            color4f outputs:out
+            float2 ui:nodegraph:node:pos = (317.07272, 200.1732)
+            int ui:nodegraph:node:stackingOrder = 820
+            string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["inputs:border_color"]
+        }
+
+        def Shader "Separate4"
+        {
+            uniform token info:id = "ND_separate4_color4"
+            color4f inputs:in.connect = </ShaderTerrainSides/SampleDiffuseAo/Image2D.outputs:out>
+            float outputs:outa
+            float outputs:outb
+            float outputs:outg
+            float outputs:outr
+            float2 ui:nodegraph:node:pos = (533.06525, 255.2155)
+            int ui:nodegraph:node:stackingOrder = 823
+        }
+
+        def Shader "Combine3"
+        {
+            uniform token info:id = "ND_combine3_color3"
+            float inputs:in1.connect = </ShaderTerrainSides/SampleDiffuseAo/Separate4.outputs:outr>
+            float inputs:in2.connect = </ShaderTerrainSides/SampleDiffuseAo/Separate4.outputs:outg>
+            float inputs:in3.connect = </ShaderTerrainSides/SampleDiffuseAo/Separate4.outputs:outb>
+            color3f outputs:out
+            float2 ui:nodegraph:node:pos = (762.6752, 228.67389)
+            int ui:nodegraph:node:stackingOrder = 824
+            string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["inputs:in2"]
+        }
+
+        def Shader "Multiply"
+        {
+            uniform token info:id = "ND_multiply_color3FA"
+            color3f inputs:in1.connect = </ShaderTerrainSides/SampleDiffuseAo/Combine3.outputs:out>
+            float inputs:in2.connect = </ShaderTerrainSides/SampleDiffuseAo/Mix.outputs:out>
+            color3f outputs:out
+            float2 ui:nodegraph:node:pos = (919.40375, 239.27217)
+            int ui:nodegraph:node:stackingOrder = 836
+        }
+
+        def Shader "Mix"
+        {
+            uniform token info:id = "ND_mix_float"
+            float inputs:bg
+            float inputs:fg.connect = </ShaderTerrainSides/SampleDiffuseAo/Separate4.outputs:outa>
+            float inputs:mix.connect = </ShaderTerrainSides/SampleDiffuseAo.inputs:aoScale>
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (797.2309, 418.28717)
+            int ui:nodegraph:node:stackingOrder = 834
+        }
+    }
+
+    def NodeGraph "SampleNormalRoughness"
+    {
+        asset inputs:NormalRoughnessMap (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (27.963911, 73.1087)
+                    int stackingOrderInSubgraph = 766
+                }
+            }
+        )
+        asset inputs:NormalRoughnessMap.connect = </ShaderTerrainSides.inputs:normal_roughness>
+        float3 outputs:Normal (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (693, 229.5)
+                    int stackingOrderInSubgraph = 761
+                }
+            }
+        )
+        float3 outputs:Normal.connect = </ShaderTerrainSides/SampleNormalRoughness/NormalMapDecode.outputs:out>
+        float outputs:roughness (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-112.06822, -32.991535)
+                    int stackingOrderInSubgraph = 765
+                }
+            }
+        )
+        float outputs:roughness.connect = </ShaderTerrainSides/SampleNormalRoughness/Separate4.outputs:outw>
+        float2 ui:nodegraph:node:pos = (-173.33919, 120.881325)
+        int ui:nodegraph:node:stackingOrder = 3207
+        string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["inputs:NormalMap"]
+        float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (1001.5682, 350.0174)
+        int ui:nodegraph:realitykit:subgraphOutputs:stackingOrder = 769
+
+        def Shader "NormalMapDecode"
+        {
+            uniform token info:id = "ND_normal_map_decode"
+            float3 inputs:in.connect = </ShaderTerrainSides/SampleNormalRoughness/Convert.outputs:out>
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (772.3711, 176.55078)
+            int ui:nodegraph:node:stackingOrder = 764
+        }
+
+        def Shader "Image2D_2"
+        {
+            uniform token info:id = "ND_RealityKitTexture2D_vector4"
+            float inputs:bias
+            string inputs:border_color
+            float4 inputs:default
+            float inputs:dynamic_min_lod_clamp
+            asset inputs:file.connect = </ShaderTerrainSides/SampleNormalRoughness.inputs:NormalRoughnessMap>
+            string inputs:mip_filter = "nearest"
+            bool inputs:no_flip_v = 1
+            int2 inputs:offset
+            float2 inputs:texcoord
+            string inputs:u_wrap_mode
+            string inputs:v_wrap_mode
+            float4 outputs:out
+            float2 ui:nodegraph:node:pos = (338, 190.5)
+            int ui:nodegraph:node:stackingOrder = 765
+        }
+
+        def Shader "Convert"
+        {
+            uniform token info:id = "ND_convert_vector4_vector3"
+            float4 inputs:in.connect = </ShaderTerrainSides/SampleNormalRoughness/Image2D_2.outputs:out>
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (578.75, 190.5)
+            int ui:nodegraph:node:stackingOrder = 759
+        }
+
+        def Shader "Separate4"
+        {
+            uniform token info:id = "ND_separate4_vector4"
+            float4 inputs:in.connect = </ShaderTerrainSides/SampleNormalRoughness/Image2D_2.outputs:out>
+            float outputs:outw
+            float outputs:outy
+            float outputs:outz
+            float2 ui:nodegraph:node:pos = (566.637, 362.28677)
+            int ui:nodegraph:node:stackingOrder = 767
+        }
+    }
+
+    def "Dot"
+    {
+    }
+
+    def "SampleRoughnessAo"
+    {
+    }
+}
+
