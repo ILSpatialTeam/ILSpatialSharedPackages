@@ -60,6 +60,13 @@ struct CockpitSpatialTemplate: SpatialTemplate {
             ))
         }
         
+        // 3. Add a 5th dummy seat (spectator) to silence the visionOS < 5 seats capacity warning
+        let dummyPos: SpatialTemplateElementPosition = .app.offsetBy(x: 0, z: 2.0)
+        seats.append(.seat(
+            position: dummyPos,
+            direction: .lookingAt(.app.offsetBy(x: 0, z: 1.0))
+        ))
+        
         print("[SpatialTemplate] Final built template has \(seats.count) seats.")
         return seats
     }

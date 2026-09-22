@@ -12,6 +12,7 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
     private let logger = Logger(subsystem: "id.infinitelearning.airbus", category: "SharePlayCoordinator")
 
     public private(set) var isSharing: Bool = false
+    public private(set) var isCockpitMode: Bool = false
     public private(set) var participants: [CockpitParticipant] = []
     public private(set) var errorMessage: String?
 
@@ -84,6 +85,7 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
         messenger = nil
         systemCoordinator = nil
         isSharing = false
+        isCockpitMode = false
         participants.removeAll()
         incomingMessageBuffer.removeAll()
         lastSentThrottle = -1.0
@@ -127,6 +129,7 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
     /// Switch to the cockpit seat layout. Call this after the immersive space
     /// has successfully opened so the intro window is not displaced.
     public func enterCockpitMode() {
+        isCockpitMode = true
         print("[SharePlayCoordinator] Entering Cockpit Mode. Local Role: \(localRole.rawValue)")
         print("[SharePlayCoordinator] Current Join Order: \(participantJoinOrder)")
         systemCoordinator?.configuration.spatialTemplatePreference = .custom(CockpitSpatialTemplate(participants: participants, joinOrder: participantJoinOrder))
@@ -135,6 +138,7 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
 
     /// Revert to side-by-side when returning to the intro screen.
     public func leaveCockpitMode() {
+        isCockpitMode = false
         systemCoordinator?.configuration.spatialTemplatePreference = .sideBySide
         logger.info("Reverted to sideBySide template")
     }
@@ -270,6 +274,12 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
         }
 
         participants.sort { $0.role.priority < $1.role.priority }
+        
+        // Fix: Update spatial template on the host and all peers if the participant list or order changed.
+        if isCockpitMode {
+            print("[SharePlayCoordinator] Re-evaluating template after participant change with Join Order: \(participantJoinOrder)")
+            systemCoordinator?.configuration.spatialTemplatePreference = .custom(CockpitSpatialTemplate(participants: participants, joinOrder: participantJoinOrder))
+        }
     }
 
     /// Called by the host only after a participant leaves.
