@@ -89,7 +89,6 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
         participants.removeAll()
         incomingMessageBuffer.removeAll()
         lastSentThrottle = -1.0
-        lastBroadcastOriginOffset = nil
         logger.info("Left SharePlay session")
     }
 
