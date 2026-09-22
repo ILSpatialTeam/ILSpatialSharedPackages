@@ -42,7 +42,7 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
 
     /// Option B — cache the last-broadcast world-anchor offset so late joiners
     /// receive it when they connect mid-session.
-    private var lastBroadcastOriginOffset: SIMD3<Float>? = nil
+    // (No longer tracking lastBroadcastOriginOffset)
 
     /// Ordered list of participant UUIDs in the sequence they were first
     /// observed by the host. Used to assign roles top-to-bottom (pilot first)
@@ -269,14 +269,6 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
                 if !isLocal, let gs = cachedGameState {
                     Task { await sendFullStateSnapshot(gameState: gs) }
                 }
-
-                // Option B: Resend the world-anchor offset to the new participant
-                // so they can reposition their cockpit scene to match.
-                if !isLocal, let offset = lastBroadcastOriginOffset {
-                    Task {
-                        await send(.worldOriginOffset(x: offset.x, y: offset.y, z: offset.z))
-                    }
-                }
             }
         }
 
@@ -414,8 +406,16 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
             gameState._pendingEntityStateResync = true
         case .cockpitPrepChanged(let prep):
             gameState.cockpitPrep.transition(prep)
-        case .fullStateSnapshot(let sw, let bt, let kn, let th, let pr):
-            gameState.applySnapshot(switches: sw, buttons: bt, knobs: kn, throttle: th, cockpitPrep: pr)
+        case .fullStateSnapshot(let switches, let buttons, let knobs, let throttle, let prep):
+            gameState.actionSource = .remote
+            gameState.controls.applyRemoteFullState(
+                switches: switches,
+                buttons: buttons,
+                knobs: knobs,
+                throttle: throttle
+            )
+            gameState.cockpitPrep.transition(prep)
+            gameState._pendingEntityStateResync = true
         case .roleAssigned, .heartbeat, .syncJoinOrder:
             break
         }
