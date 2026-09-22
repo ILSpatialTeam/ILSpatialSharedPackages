@@ -238,9 +238,8 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
             // Fix 3: Non-hosts start with a .pilot placeholder and wait for
             // the host's roleAssigned message to apply the correct role.
             // The host assigns a definitive role immediately and broadcasts it.
-            let joinIndex = participantJoinOrder.firstIndex(of: pid) ?? 0
-            let allRoles = SessionRole.allCases
-            let assignedRole = joinIndex < allRoles.count ? allRoles[joinIndex] : .instructor2
+            let usedRoles = Set(participants.map(\.role))
+            let assignedRole = SessionRole.allCases.first(where: { !usedRoles.contains($0) }) ?? .instructor2
 
             let newP = CockpitParticipant(
                 id: pid,
