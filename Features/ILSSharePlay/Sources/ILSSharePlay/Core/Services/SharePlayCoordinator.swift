@@ -341,11 +341,9 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
 
     /// Option B — pilot broadcasts the ARKit head-tracking world-anchor offset.
     /// Caches the value so late-joiners receive it when they connect.
-    public func broadcastWorldOriginOffset(_ offset: SIMD3<Float>) async {
+    public func broadcastCockpitPrepChanged(_ prep: CockpitPrep) async {
         guard isSharing else { return }
-        lastBroadcastOriginOffset = offset
-        await send(.worldOriginOffset(x: offset.x, y: offset.y, z: offset.z))
-        logger.debug("Broadcast worldOriginOffset \(offset)")
+        await send(.cockpitPrepChanged(prep))
     }
 
     public func sendFullStateSnapshot(gameState: GameStateCore) async {
@@ -416,21 +414,8 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
             gameState._pendingEntityStateResync = true
         case .cockpitPrepChanged(let prep):
             gameState.cockpitPrep.transition(prep)
-        case .fullStateSnapshot(let switches, let buttons, let knobs, let throttle, let prep):
-            gameState.actionSource = .remote
-            gameState.controls.applyRemoteFullState(
-                switches: switches,
-                buttons: buttons,
-                knobs: knobs,
-                throttle: throttle
-            )
-            gameState.cockpitPrep.transition(prep)
-            gameState._pendingEntityStateResync = true
-        case .worldOriginOffset(let x, let y, let z):
-            // Option B — pilot has computed its ARKit head-tracking offset.
-            // Set on GameStateCore so the RealityView update closure repositions
-            // the worldRoot entity to match the pilot's scene anchor.
-            gameState.remoteWorldOriginOffset = SIMD3<Float>(x, y, z)
+        case .fullStateSnapshot(let sw, let bt, let kn, let th, let pr):
+            gameState.applySnapshot(switches: sw, buttons: bt, knobs: kn, throttle: th, cockpitPrep: pr)
         case .roleAssigned, .heartbeat, .syncJoinOrder:
             break
         }
