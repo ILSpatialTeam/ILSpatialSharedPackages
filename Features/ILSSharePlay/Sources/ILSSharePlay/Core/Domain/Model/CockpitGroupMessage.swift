@@ -16,4 +16,8 @@ public enum CockpitGroupMessage: Codable, Sendable {
         throttle: Float,
         cockpitPrep: CockpitPrep
     )
+    /// Option B — pilot broadcasts its ARKit-derived world-anchor offset so
+    /// every participant shifts their cockpit scene to the same world position.
+    case worldOriginOffset(x: Float, y: Float, z: Float)
 }
+

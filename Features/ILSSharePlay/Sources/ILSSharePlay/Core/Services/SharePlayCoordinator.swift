@@ -32,11 +32,26 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
 
     private var session: GroupSession<CockpitGroupActivity>?
     private var messenger: GroupSessionMessenger?
+    private var systemCoordinator: SystemCoordinator?   // Fix 6 + Fix 4
     private var subscriptions = Set<AnyCancellable>()
     private var localParticipantID: String = UUID().uuidString
 
     private var incomingMessageBuffer: [CockpitGroupMessage] = []
     private var lastSentThrottle: Float = -1.0
+
+    /// Option B — cache the last-broadcast world-anchor offset so late joiners
+    /// receive it when they connect mid-session.
+    private var lastBroadcastOriginOffset: SIMD3<Float>? = nil
+
+    /// Ordered list of participant UUIDs in the sequence they were first
+    /// observed by the host. Used to assign roles top-to-bottom (pilot first)
+    /// in a stable, deterministic way across all devices.
+    private var participantJoinOrder: [String] = []
+
+    /// Weak reference to the latest GameStateCore supplied by the immersive
+    /// view's tick-loop. Used to push a full-state snapshot to late joiners
+    /// so they don't start at cold-dark when the host is already mid-flight.
+    private weak var cachedGameState: GameStateCore?
 
     public init() {}
 
@@ -50,17 +65,12 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
 
     public func activate() async {
         do {
-            let result = try await CockpitGroupActivity().activate()
-            switch result {
-            case .success(let session):
-                await configureSession(session)
-            case .failure(let error):
-                logger.error("Failed to activate SharePlay: \(error.localizedDescription)")
-                errorMessage = error.localizedDescription
-            case .cancelled:
+            let accepted = try await CockpitGroupActivity().activate()
+            if accepted {
+                // Session arrives through startListening()'s CockpitGroupActivity.sessions() loop.
+                logger.info("SharePlay activity accepted — awaiting session via startListening()")
+            } else {
                 logger.info("SharePlay activation cancelled by user")
-            @unknown default:
-                break
             }
         } catch {
             logger.error("SharePlay activation error: \(error.localizedDescription)")
@@ -72,10 +82,12 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
         session?.leave()
         session = nil
         messenger = nil
+        systemCoordinator = nil
         isSharing = false
         participants.removeAll()
         incomingMessageBuffer.removeAll()
         lastSentThrottle = -1.0
+        lastBroadcastOriginOffset = nil
         logger.info("Left SharePlay session")
     }
 
@@ -88,15 +100,41 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
         setupParticipantListeners(session: newSession)
 
         if let coordinator = await newSession.systemCoordinator {
+            self.systemCoordinator = coordinator
             var configuration = SystemCoordinator.Configuration()
             configuration.supportsGroupImmersiveSpace = true
+            // Fix 6: Start with sideBySide so the intro window isn't displaced.
+            // enterCockpitMode() switches to CockpitSpatialTemplate after the
+            // immersive space successfully opens.
             configuration.spatialTemplatePreference = .sideBySide
             coordinator.configuration = configuration
+
+            // Fix 4: Observe confirmed seat assignments from the OS.
+            Task {
+                for await state in coordinator.localParticipantStates {
+                    logger.debug("Local participant seat updated: \(String(describing: state.seat))")
+                }
+            }
         }
 
         newSession.join()
         isSharing = true
         logger.info("Joined SharePlay session")
+    }
+
+    // MARK: - Fix 6: Cockpit Mode (deferred spatial template)
+
+    /// Switch to the cockpit seat layout. Call this after the immersive space
+    /// has successfully opened so the intro window is not displaced.
+    public func enterCockpitMode() {
+        systemCoordinator?.configuration.spatialTemplatePreference = .custom(CockpitSpatialTemplate(participants: participants, joinOrder: participantJoinOrder))
+        logger.info("Switched to dynamic CockpitSpatialTemplate based on join order")
+    }
+
+    /// Revert to side-by-side when returning to the intro screen.
+    public func leaveCockpitMode() {
+        systemCoordinator?.configuration.spatialTemplatePreference = .sideBySide
+        logger.info("Reverted to sideBySide template")
     }
 
     private func setupMessageListeners(messenger: GroupSessionMessenger) {
@@ -130,57 +168,121 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
             .store(in: &subscriptions)
     }
 
+    // MARK: - Host Detection (Fix 3)
+
+    /// True on the device that should be authoritative for role assignment.
+    /// Deterministic: the participant whose UUID string is lexicographically
+    /// smallest is always the host on every device simultaneously, with no
+    /// negotiation needed.
+    private var isHost: Bool {
+        guard let session else { return false }
+        let localID = session.localParticipant.id.uuidString
+        let allIDs = session.activeParticipants.map { $0.id.uuidString }
+        return localID == (allIDs.min() ?? localID)
+    }
+
+    /// Option B — true when the local participant holds the Pilot role and
+    /// should broadcast the ARKit world-anchor offset to peers.
+    public var isPilotAuthority: Bool {
+        localRole == .pilot
+    }
+
     private func reconcileParticipants(_ activeParticipants: Set<Participant>) {
         let currentIDs = Set(participants.map(\.id))
         let activeIDs = Set(activeParticipants.map { $0.id.uuidString })
 
+        // --- Handle departures ---
         let removedIDs = currentIDs.subtracting(activeIDs)
         if !removedIDs.isEmpty {
+            // Remove from join-order tracking too so slots can be reused.
+            participantJoinOrder.removeAll { removedIDs.contains($0) }
             participants.removeAll { removedIDs.contains($0.id) }
-            promoteRolesIfNeeded()
+            // Host re-broadcasts updated roles after a departure.
+            if isHost { promoteRolesIfNeeded() }
         }
 
-        let newParticipants = activeParticipants.filter { !currentIDs.contains($0.id.uuidString) }
+        // --- Handle arrivals ---
+        // Sort by UUID for a stable insertion order on every device.
+        let newParticipants = activeParticipants
+            .filter { !currentIDs.contains($0.id.uuidString) }
+            .sorted { $0.id.uuidString < $1.id.uuidString }
+
         for participant in newParticipants {
             if participants.count >= Self.maxParticipants {
                 logger.warning("Participant \(participant.id.uuidString) rejected: max 4 reached")
                 continue
             }
+
+            let pid = participant.id.uuidString
             let isLocal = participant.id == session?.localParticipant.id
-            let role = nextAvailableRole()
+
+            // Track join order so the host can assign the right slot.
+            if !participantJoinOrder.contains(pid) {
+                participantJoinOrder.append(pid)
+            }
+
+            // Fix 3: Non-hosts start with a .pilot placeholder and wait for
+            // the host's roleAssigned message to apply the correct role.
+            // The host assigns a definitive role immediately and broadcasts it.
+            let joinIndex = participantJoinOrder.firstIndex(of: pid) ?? 0
+            let allRoles = SessionRole.allCases
+            let assignedRole = joinIndex < allRoles.count ? allRoles[joinIndex] : .instructor2
+
             let newP = CockpitParticipant(
-                id: participant.id.uuidString,
-                role: role,
+                id: pid,
+                role: isHost ? assignedRole : .pilot,   // non-hosts use placeholder
                 displayName: isLocal ? "You" : "Participant \(participants.count + 1)",
                 isLocal: isLocal
             )
             participants.append(newP)
+
             if isLocal {
-                localParticipantID = participant.id.uuidString
+                localParticipantID = pid
             }
-            Task {
-                await send(.roleAssigned(participantID: newP.id, role: role))
+
+            if isHost {
+                // Host is the single authority: broadcast this participant's role
+                // so every device (including the joiner) receives one definitive
+                // assignment with no last-write-wins race.
+                let role = assignedRole
+                Task { await send(.roleAssigned(participantID: pid, role: role)) }
+
+                // Fix 2: Push the current cockpit state to the new peer so they
+                // don't land at cold-dark when the session is already mid-flight.
+                if !isLocal, let gs = cachedGameState {
+                    Task { await sendFullStateSnapshot(gameState: gs) }
+                }
+
+                // Option B: Resend the world-anchor offset to the new participant
+                // so they can reposition their cockpit scene to match.
+                if !isLocal, let offset = lastBroadcastOriginOffset {
+                    Task {
+                        await send(.worldOriginOffset(x: offset.x, y: offset.y, z: offset.z))
+                    }
+                }
             }
         }
 
         participants.sort { $0.role.priority < $1.role.priority }
     }
 
-    private func nextAvailableRole() -> SessionRole {
-        let occupied = Set(participants.map(\.role))
-        for role in SessionRole.allCases {
-            if !occupied.contains(role) { return role }
-        }
-        return .instructor2
-    }
-
+    /// Called by the host only after a participant leaves.
+    /// Re-packs remaining participants into contiguous top-priority slots
+    /// (e.g. if Pilot leaves, Copilot → Pilot, Instructor1 → Copilot).
+    /// The host broadcasts every reassignment so remote HUDs stay consistent.
     private func promoteRolesIfNeeded() {
-        let occupied = Set(participants.map(\.role))
-        for role in SessionRole.allCases {
-            if !occupied.contains(role) {
-                if let lowerIdx = participants.firstIndex(where: { $0.role > role }) {
-                    participants[lowerIdx].role = role
-                }
+        // Rebuild join-order-based roles using only the participants that remain.
+        let sorted = participants.sorted { $0.role < $1.role }
+        let targetRoles = Array(SessionRole.allCases.prefix(sorted.count))
+
+        for (newRole, participant) in zip(targetRoles, sorted) {
+            guard let idx = participants.firstIndex(where: { $0.id == participant.id }) else { continue }
+            if participants[idx].role != newRole {
+                participants[idx].role = newRole
+                // Host broadcasts all promotions (not just local ones) so every
+                // peer updates their HUD without another race.
+                let pid = participants[idx].id
+                Task { await send(.roleAssigned(participantID: pid, role: newRole)) }
             }
         }
     }
@@ -191,6 +293,11 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
         guard availableRoles.contains(newRole),
               let localIdx = participants.firstIndex(where: \.isLocal) else { return }
         participants[localIdx].role = newRole
+        
+        
+        // Tell the OS to re-evaluate the spatial template with the new role ordering
+        systemCoordinator?.configuration.spatialTemplatePreference = .custom(CockpitSpatialTemplate(participants: participants, joinOrder: participantJoinOrder))
+        
         Task {
             await send(.roleAssigned(participantID: localParticipantID, role: newRole))
         }
@@ -205,6 +312,15 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
         } catch {
             logger.error("Failed to send message: \(error.localizedDescription)")
         }
+    }
+
+    /// Option B — pilot broadcasts the ARKit head-tracking world-anchor offset.
+    /// Caches the value so late-joiners receive it when they connect.
+    public func broadcastWorldOriginOffset(_ offset: SIMD3<Float>) async {
+        guard isSharing else { return }
+        lastBroadcastOriginOffset = offset
+        await send(.worldOriginOffset(x: offset.x, y: offset.y, z: offset.z))
+        logger.debug("Broadcast worldOriginOffset \(offset)")
     }
 
     public func sendFullStateSnapshot(gameState: GameStateCore) async {
@@ -226,6 +342,11 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
             if let idx = participants.firstIndex(where: { $0.id == pid }) {
                 participants[idx].role = role
                 participants.sort { $0.role.priority < $1.role.priority }
+                
+                // If the host assigned us a new role over the network, update the spatial template
+                if participants[idx].isLocal {
+                    systemCoordinator?.configuration.spatialTemplatePreference = .custom(CockpitSpatialTemplate(participants: participants, joinOrder: participantJoinOrder))
+                }
             }
         case .heartbeat:
             break
@@ -273,6 +394,11 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
             )
             gameState.cockpitPrep.transition(prep)
             gameState._pendingEntityStateResync = true
+        case .worldOriginOffset(let x, let y, let z):
+            // Option B — pilot has computed its ARKit head-tracking offset.
+            // Set on GameStateCore so the RealityView update closure repositions
+            // the worldRoot entity to match the pilot's scene anchor.
+            gameState.remoteWorldOriginOffset = SIMD3<Float>(x, y, z)
         case .roleAssigned, .heartbeat:
             break
         }
@@ -303,6 +429,10 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
 
     public func applyIncomingRemoteState(to gameState: GameStateCore) {
         guard isSharing else { return }
+        // Fix 2: Cache a weak ref so reconcileParticipants can push a
+        // full-state snapshot to late joiners without needing the view to
+        // explicitly pass the gameState at join time.
+        cachedGameState = gameState
         let messages = consumeIncomingMessages()
         guard !messages.isEmpty else { return }
         for message in messages {

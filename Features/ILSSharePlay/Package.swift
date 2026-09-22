@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "ILSSharePlay",
-    platforms: [.visionOS("2.0")],
+    platforms: [.visionOS("26.0")],
     products: [
         .library(name: "ILSSharePlay", targets: ["ILSSharePlay"]),
     ],
