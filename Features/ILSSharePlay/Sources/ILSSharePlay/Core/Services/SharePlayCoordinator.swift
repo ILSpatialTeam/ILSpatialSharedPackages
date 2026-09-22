@@ -414,7 +414,7 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
             // Set on GameStateCore so the RealityView update closure repositions
             // the worldRoot entity to match the pilot's scene anchor.
             gameState.remoteWorldOriginOffset = SIMD3<Float>(x, y, z)
-        case .roleAssigned, .heartbeat:
+        case .roleAssigned, .heartbeat, .syncJoinOrder:
             break
         }
     }
