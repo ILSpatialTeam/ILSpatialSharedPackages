@@ -200,8 +200,12 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
         // --- Handle departures ---
         let removedIDs = currentIDs.subtracting(activeIDs)
         if !removedIDs.isEmpty {
-            // Remove from join-order tracking too so slots can be reused.
-            participantJoinOrder.removeAll { removedIDs.contains($0) }
+            // Replace with empty string to preserve slot indices for the OS spatial template
+            for id in removedIDs {
+                if let idx = participantJoinOrder.firstIndex(of: id) {
+                    participantJoinOrder[idx] = ""
+                }
+            }
             participants.removeAll { removedIDs.contains($0.id) }
             // Host re-broadcasts updated roles after a departure.
             if isHost { promoteRolesIfNeeded() }
@@ -224,7 +228,11 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
 
             // Track join order so the host can assign the right slot.
             if !participantJoinOrder.contains(pid) {
-                participantJoinOrder.append(pid)
+                if let emptyIdx = participantJoinOrder.firstIndex(of: "") {
+                    participantJoinOrder[emptyIdx] = pid
+                } else {
+                    participantJoinOrder.append(pid)
+                }
             }
 
             // Fix 3: Non-hosts start with a .pilot placeholder and wait for
