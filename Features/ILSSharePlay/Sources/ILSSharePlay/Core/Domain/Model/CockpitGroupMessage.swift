@@ -8,6 +8,7 @@ public enum CockpitGroupMessage: Codable, Sendable {
     case throttleChanged(Float)
     case cockpitPrepChanged(CockpitPrep)
     case roleAssigned(participantID: String, role: SessionRole)
+    case syncJoinOrder([String])
     case heartbeat
     case fullStateSnapshot(
         switches: [String: SwitchState],

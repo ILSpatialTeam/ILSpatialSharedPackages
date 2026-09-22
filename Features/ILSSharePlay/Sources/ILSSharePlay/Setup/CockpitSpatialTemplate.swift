@@ -37,10 +37,12 @@ struct CockpitSpatialTemplate: SpatialTemplate {
         }
         
         // 1. Build seats for active participants in their exact join order
-        for pid in joinOrder {
+        for (index, pid) in joinOrder.enumerated() {
             guard let participant = participants.first(where: { $0.id == pid }) else { continue }
+            let pos = position(for: participant.role)
+            print("[SpatialTemplate] Building seat for Join Index \(index): Participant \(participant.role.rawValue)")
             seats.append(.seat(
-                position: position(for: participant.role),
+                position: pos,
                 direction: direction(for: participant.role)
             ))
         }
@@ -50,12 +52,15 @@ struct CockpitSpatialTemplate: SpatialTemplate {
         let remainingRoles = SessionRole.allCases.filter { !assignedRoles.contains($0) }
         
         for role in remainingRoles {
+            let pos = position(for: role)
+            print("[SpatialTemplate] Padding unassigned seat for \(role.rawValue)")
             seats.append(.seat(
-                position: position(for: role),
+                position: pos,
                 direction: direction(for: role)
             ))
         }
         
+        print("[SpatialTemplate] Final built template has \(seats.count) seats.")
         return seats
     }
 }

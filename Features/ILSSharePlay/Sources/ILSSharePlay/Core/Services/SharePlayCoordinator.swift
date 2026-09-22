@@ -127,6 +127,8 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
     /// Switch to the cockpit seat layout. Call this after the immersive space
     /// has successfully opened so the intro window is not displaced.
     public func enterCockpitMode() {
+        print("[SharePlayCoordinator] Entering Cockpit Mode. Local Role: \(localRole.rawValue)")
+        print("[SharePlayCoordinator] Current Join Order: \(participantJoinOrder)")
         systemCoordinator?.configuration.spatialTemplatePreference = .custom(CockpitSpatialTemplate(participants: participants, joinOrder: participantJoinOrder))
         logger.info("Switched to dynamic CockpitSpatialTemplate based on join order")
     }
@@ -245,7 +247,11 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
                 // so every device (including the joiner) receives one definitive
                 // assignment with no last-write-wins race.
                 let role = assignedRole
-                Task { await send(.roleAssigned(participantID: pid, role: role)) }
+                let updatedOrder = participantJoinOrder
+                Task { 
+                    await send(.roleAssigned(participantID: pid, role: role))
+                    await send(.syncJoinOrder(updatedOrder))
+                }
 
                 // Fix 2: Push the current cockpit state to the new peer so they
                 // don't land at cold-dark when the session is already mid-flight.
@@ -294,6 +300,8 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
               let localIdx = participants.firstIndex(where: \.isLocal) else { return }
         participants[localIdx].role = newRole
         
+        print("[SharePlayCoordinator] Requesting Role Swap to \(newRole.rawValue)")
+        print("[SharePlayCoordinator] Re-evaluating template with Join Order: \(participantJoinOrder)")
         
         // Tell the OS to re-evaluate the spatial template with the new role ordering
         systemCoordinator?.configuration.spatialTemplatePreference = .custom(CockpitSpatialTemplate(participants: participants, joinOrder: participantJoinOrder))
@@ -345,9 +353,16 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
                 
                 // If the host assigned us a new role over the network, update the spatial template
                 if participants[idx].isLocal {
+                    print("[SharePlayCoordinator] Role updated to \(role.rawValue) by Host. Re-evaluating template.")
                     systemCoordinator?.configuration.spatialTemplatePreference = .custom(CockpitSpatialTemplate(participants: participants, joinOrder: participantJoinOrder))
                 }
             }
+        case .syncJoinOrder(let order):
+            guard !isHost else { return }
+            print("[SharePlayCoordinator] Received canonical join order from host: \(order)")
+            participantJoinOrder = order
+            // Re-evaluate template with the definitive join order
+            systemCoordinator?.configuration.spatialTemplatePreference = .custom(CockpitSpatialTemplate(participants: participants, joinOrder: participantJoinOrder))
         case .heartbeat:
             break
         default:
