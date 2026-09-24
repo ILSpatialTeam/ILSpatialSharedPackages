@@ -16,6 +16,23 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
     public private(set) var participants: [CockpitParticipant] = []
     public private(set) var errorMessage: String?
 
+    #if targetEnvironment(simulator)
+    public var isSimulatorSeatingPreviewEnabled = true {
+        didSet { updateSpatialTemplate() }
+    }
+    #endif
+
+    /// Mock FaceTime Personas are not app clients. Never relax reservations
+    /// when another ALI client has joined, even in a simulator build.
+    public var isSimulatorSeatingPreviewActive: Bool {
+        #if targetEnvironment(simulator)
+        return isSimulatorSeatingPreviewEnabled && localParticipant != nil
+            && !participants.contains(where: { !$0.isLocal })
+        #else
+        return false
+        #endif
+    }
+
     public var isConnected: Bool { isSharing }
 
     public var localParticipant: CockpitParticipant? {
@@ -165,7 +182,10 @@ public final class SharePlayCoordinator: CockpitSharePlayBridge {
         guard isCockpitMode, spatialSeats.count == SessionRole.allCases.count,
               let systemCoordinator, let localParticipant else { return }
         systemCoordinator.configuration.spatialTemplatePreference = .custom(
-            CockpitSpatialTemplate(positions: spatialSeats)
+            CockpitSpatialTemplate(
+                positions: spatialSeats,
+                previewRole: isSimulatorSeatingPreviewActive ? localParticipant.role : nil
+            )
         )
         systemCoordinator.assignRole(localParticipant.role)
         logger.info("Assigned spatial seat: \(localParticipant.role.rawValue)")
