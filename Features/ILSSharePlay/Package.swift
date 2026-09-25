@@ -3,21 +3,15 @@ import PackageDescription
 
 let package = Package(
     name: "ILSSharePlay",
-    platforms: [.visionOS("26.0")],
+    platforms: [.visionOS("2.0"), .macOS(.v12)],
     products: [
         .library(name: "ILSSharePlay", targets: ["ILSSharePlay"]),
     ],
-    dependencies: [
-        .package(path: "../../Core/ILSFoundation"),
-        .package(path: "../../../Packages/CockpitDomain"),
-    ],
+    dependencies: [],
     targets: [
         .target(
             name: "ILSSharePlay",
-            dependencies: [
-                .product(name: "ILSFoundation", package: "ILSFoundation"),
-                .product(name: "CockpitDomain", package: "CockpitDomain"),
-            ],
+            dependencies: [],
             linkerSettings: [
                 .linkedFramework("GroupActivities"),
                 .linkedFramework("Foundation"),

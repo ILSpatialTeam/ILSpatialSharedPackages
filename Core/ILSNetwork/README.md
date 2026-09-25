@@ -1,4 +1,4 @@
-# CoreNetwork
+# ILSNetwork
 
 A protocol-based, async/await networking layer for Apple platforms. Zero third-party dependencies — built entirely on native `URLSession`.
 
@@ -11,7 +11,7 @@ iOS 15+ · macOS 12+ · visionOS 1+ · watchOS 8+ · tvOS 15+
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/your-org/CoreNetwork.git", from: "1.0.0")
+    .package(path: "../SharedPackages/Core/ILSNetwork")
 ]
 ```
 
@@ -20,7 +20,7 @@ dependencies: [
 ### 1. Define Your Endpoints
 
 ```swift
-import CoreNetwork
+import ILSNetwork
 
 enum UserEndpoint: Endpoint {
     case list
@@ -124,11 +124,8 @@ final class UserServiceTests: XCTestCase {
 │  └──────────────────┬────────────────────────┘  │
 │                     │ depends on                │
 ├─────────────────────┼───────────────────────────┤
-│  CoreNetwork SPM    │                           │
+│  ILSNetwork SPM     │                           │
 │  ┌──────────────────┴────────────────────────┐  │
-│  │  Service Layer (shared)                   │  │
-│  │  AuthService · HealthCheckService         │  │
-│  ├───────────────────────────────────────────┤  │
 │  │  Network Layer (generic)                  │  │
 │  │  NetworkClient ← NetworkSession(URLSession)│  │
 │  │  RequestBuilder · Interceptors            │  │
@@ -136,3 +133,7 @@ final class UserServiceTests: XCTestCase {
 │  └───────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────┘
 ```
+
+Authentication, health checks, scoring, progress, and other backend contracts
+belong to the product package that owns those APIs. `ILSNetwork` supplies only
+the reusable HTTP transport and interception mechanisms.

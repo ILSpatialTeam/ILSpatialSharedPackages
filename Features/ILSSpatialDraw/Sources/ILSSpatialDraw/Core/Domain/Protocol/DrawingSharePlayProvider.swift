@@ -1,5 +1,5 @@
 import Foundation
-import ILSFoundation
+import ILSSharePlay
 
 /// A draw-specific extension of the base SharePlay manager protocol.
 public protocol DrawingSharePlayProvider: SharePlayManagerProtocol {

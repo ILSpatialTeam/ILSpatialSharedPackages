@@ -11,7 +11,8 @@ let package = Package(
         .package(path: "../../Core/ILSEngine"),
         .package(path: "../../Core/ILSFoundation"),
         .package(path: "../ILSHandTracking"),
-        .package(path: "../ILSSpatialAudio")
+        .package(path: "../ILSSpatialAudio"),
+        .package(path: "../ILSSharePlay")
     ],
     targets: [
         .target(
@@ -20,7 +21,8 @@ let package = Package(
                 "ILSEngine",
                 "ILSFoundation",
                 "ILSHandTracking",
-                "ILSSpatialAudio"
+                "ILSSpatialAudio",
+                "ILSSharePlay"
             ]
         )
     ]

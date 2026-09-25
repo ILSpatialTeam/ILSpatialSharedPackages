@@ -11,8 +11,7 @@ let package = Package(
     targets: [
         .target(
             name: "ILSFoundation",
-            dependencies: [],
-            resources: [.process("Resources/Fonts")]
+            dependencies: []
         )
     ]
 )

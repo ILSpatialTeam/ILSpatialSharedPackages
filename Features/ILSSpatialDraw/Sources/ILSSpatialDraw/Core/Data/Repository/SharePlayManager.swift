@@ -2,6 +2,7 @@ import Foundation
 import GroupActivities
 import Combine
 import ILSFoundation
+import ILSSharePlay
 
 @MainActor
 public class SharePlayManager: ILSharePlayManager<DrawingActivity>, ObservableObject, DrawingSharePlayProvider {

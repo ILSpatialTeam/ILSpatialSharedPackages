@@ -3,21 +3,15 @@ import PackageDescription
 
 let package = Package(
     name: "ILSEngine",
-    platforms: [.visionOS("2.0"), .iOS(.v17)],
+    platforms: [.visionOS("2.0"), .iOS(.v17), .macOS("15.0")],
     products: [
         .library(name: "ILSEngine", type: .static, targets: ["ILSEngine"]),
     ],
-    dependencies: [
-        .package(path: "../ILSFoundation"),
-        .package(path: "../../RealityKitContent/ILSRealityAssets")
-    ],
+    dependencies: [],
     targets: [
         .target(
             name: "ILSEngine",
-            dependencies: [
-                .product(name: "ILSFoundation", package: "ILSFoundation"),
-                .product(name: "ILSRealityAssets", package: "ILSRealityAssets")
-            ]
+            dependencies: []
         )
     ]
 )

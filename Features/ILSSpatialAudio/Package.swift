@@ -3,21 +3,15 @@ import PackageDescription
 
 let package = Package(
     name: "ILSSpatialAudio",
-    platforms: [.visionOS("2.0")],
+    platforms: [.visionOS("2.0"), .macOS("15.0")],
     products: [
         .library(name: "ILSSpatialAudio", targets: ["ILSSpatialAudio"]),
     ],
-    dependencies: [
-        .package(path: "../../Core/ILSEngine"),
-        .package(path: "../../Core/ILSFoundation")
-    ],
+    dependencies: [],
     targets: [
         .target(
             name: "ILSSpatialAudio",
-            dependencies: [
-                "ILSEngine",
-                "ILSFoundation"
-            ]
+            dependencies: []
         )
     ]
 )
