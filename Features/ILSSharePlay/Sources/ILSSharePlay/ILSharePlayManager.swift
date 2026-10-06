@@ -3,7 +3,7 @@ import GroupActivities
 import Combine
 import OSLog
 
-/// A generic manager that handles SharePlay session lifecycle and Spatial Personas.
+/// A generic manager that handles SharePlay session lifecycle and messaging.
 /// Subclass this or compose it to handle specific Message types and Activities.
 @MainActor
 open class ILSharePlayManager<Activity: GroupActivity> {
@@ -66,17 +66,6 @@ open class ILSharePlayManager<Activity: GroupActivity> {
             }
         }
         .store(in: &subscriptions)
-        
-        // Enable Spatial Personas
-        if let coordinator = await newSession.systemCoordinator {
-            logger.info("Configuring SystemCoordinator for spatial personas")
-            var configuration = SystemCoordinator.Configuration()
-            configuration.supportsGroupImmersiveSpace = true
-            configuration.spatialTemplatePreference = .sideBySide
-            coordinator.configuration = configuration
-        } else {
-            logger.warning("SystemCoordinator NOT available - Spatial Personas may not work")
-        }
         
         newSession.join()
         isSharing = true

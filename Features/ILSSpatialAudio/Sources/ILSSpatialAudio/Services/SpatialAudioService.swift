@@ -7,14 +7,24 @@ public protocol SpatialAudioServiceProtocol {
 }
 
 public final class SpatialAudioService: SpatialAudioServiceProtocol {
-    
+    public typealias ResourceLoader = @Sendable (String) async throws -> AudioFileResource
+
     private var preloadedResources: [String: AudioFileResource] = [:]
-    
-    public init() {}
+    private let loadResource: ResourceLoader
+
+    /// Creates a player with caller-controlled resource resolution.
+    /// The default keeps the existing RealityKit bundle lookup behavior.
+    public init(
+        resourceLoader: @escaping ResourceLoader = { name in
+            try await AudioFileResource(named: name)
+        }
+    ) {
+        self.loadResource = resourceLoader
+    }
     
     public func preloadSound(named name: String) async throws {
         if preloadedResources[name] != nil { return }
-        let resource = try await AudioFileResource(named: name)
+        let resource = try await loadResource(name)
         preloadedResources[name] = resource
     }
     
@@ -25,7 +35,7 @@ public final class SpatialAudioService: SpatialAudioServiceProtocol {
     }
     
     public func playSound(named name: String, on entity: Entity) async throws {
-        let resource = try await AudioFileResource(named: name)
+        let resource = try await loadResource(name)
         let audioController = entity.prepareAudio(resource)
         audioController.play()
     }
