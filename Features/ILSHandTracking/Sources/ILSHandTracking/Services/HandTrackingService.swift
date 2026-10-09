@@ -1,6 +1,7 @@
 import Foundation
 import ARKit
 import ILSFoundation
+import QuartzCore
 
 public protocol HandTrackingServiceProtocol: SpatialServiceProtocol {
     var isTracking: Bool { get }
@@ -17,6 +18,7 @@ public final class HandTrackingService: HandTrackingServiceProtocol, @unchecked 
     // Recreated on every start() — ARKit providers cannot be reused after stop().
     private var session: ARKitSession?
     private var handTracking: HandTrackingProvider?
+    private var worldTracking: WorldTrackingProvider?
     private var updateTask: Task<Void, Never>?
 
     private var startGeneration: UUID?
@@ -38,6 +40,16 @@ public final class HandTrackingService: HandTrackingServiceProtocol, @unchecked 
 
     public init() {}
 
+    /// The same ARKit session owns hand and device tracking, so starting hand
+    /// tracking cannot stop the provider used by the head-facing diagnostic.
+    public func deviceTransform() -> simd_float4x4? {
+        let provider = lock.withLock { _isTracking ? worldTracking : nil }
+        guard provider?.state == .running,
+              let anchor = provider?.queryDeviceAnchor(atTimestamp: CACurrentMediaTime()),
+              anchor.isTracked else { return nil }
+        return anchor.originFromAnchorTransform
+    }
+
     public func start() async throws {
         guard HandTrackingProvider.isSupported else {
             logger.warning("Hand tracking not supported on this device.")
@@ -54,6 +66,7 @@ public final class HandTrackingService: HandTrackingServiceProtocol, @unchecked 
 
         let newSession = ARKitSession()
         let newProvider = HandTrackingProvider()
+        let newWorldProvider = WorldTrackingProvider()
         do {
             let authorization = await newSession.requestAuthorization(for: [.handTracking])
             try Task.checkCancellation()
@@ -68,10 +81,11 @@ public final class HandTrackingService: HandTrackingServiceProtocol, @unchecked 
                 guard startGeneration == generation else { return false }
                 session = newSession
                 handTracking = newProvider
+                worldTracking = newWorldProvider
                 return true
             }
             guard shouldRun else { return }
-            try await newSession.run([newProvider])
+            try await newSession.run([newProvider, newWorldProvider])
             try Task.checkCancellation()
 
             let installed = lock.withLock {
@@ -108,6 +122,7 @@ public final class HandTrackingService: HandTrackingServiceProtocol, @unchecked 
                     startGeneration = nil
                     session = nil
                     handTracking = nil
+                    worldTracking = nil
                     _isTracking = false
                 }
             }
@@ -122,6 +137,7 @@ public final class HandTrackingService: HandTrackingServiceProtocol, @unchecked 
             updateTask = nil
             session = nil
             handTracking = nil
+            worldTracking = nil
             _isTracking = false
             _latestLeftHand = nil
             _latestRightHand = nil
