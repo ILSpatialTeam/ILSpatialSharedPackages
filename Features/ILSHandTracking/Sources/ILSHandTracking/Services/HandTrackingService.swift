@@ -2,6 +2,7 @@ import Foundation
 import ARKit
 import ILSFoundation
 import QuartzCore
+import os
 
 public protocol HandTrackingServiceProtocol: SpatialServiceProtocol {
     var isTracking: Bool { get }
@@ -14,6 +15,7 @@ public final class HandTrackingService: HandTrackingServiceProtocol, @unchecked 
     private let logger = ILLogger(subsystem: .handTracking, category: "HandTrackingService")
 
     private let lock = NSLock()
+    private let signposter = OSSignposter(subsystem: "com.ali.handtracking", category: "HandLatency")
 
     // Recreated on every start() — ARKit providers cannot be reused after stop().
     private var session: ARKitSession?
@@ -26,6 +28,23 @@ public final class HandTrackingService: HandTrackingServiceProtocol, @unchecked 
     private var _isTracking = false
     public var isTracking: Bool {
         lock.withLock { _isTracking }
+    }
+
+    private var handRevision: UInt64 = 0
+    /// Atomic snapshot lets consumers build a pose once per ARKit update.
+    public var handSnapshot: (revision: UInt64, left: HandAnchor?, right: HandAnchor?) {
+        lock.withLock { (handRevision, _latestLeftHand, _latestRightHand) }
+    }
+
+    /// ARKit's timestamp query is not thread-safe; serialize it with provider lifecycle.
+    /// This bypasses the async delivery queue for rendering without changing interaction samples.
+    public func handsForRendering(at timestamp: TimeInterval) -> (left: HandAnchor?, right: HandAnchor?) {
+        lock.withLock {
+            guard timestamp.isFinite, _isTracking, let provider = handTracking,
+                  provider.state == .running else { return (nil, nil) }
+            let predicted = provider.handAnchors(at: timestamp)
+            return (predicted.leftHand ?? _latestLeftHand, predicted.rightHand ?? _latestRightHand)
+        }
     }
 
     private var _latestLeftHand: HandAnchor?
@@ -96,11 +115,16 @@ public final class HandTrackingService: HandTrackingServiceProtocol, @unchecked 
                         guard !Task.isCancelled, let self else { break }
                         let accepted = self.lock.withLock {
                             guard self.startGeneration == generation else { return false }
+                            self.handRevision &+= 1
                             let anchor = update.anchor
+                            if self.signposter.isEnabled {
+                                let age = max(0, CACurrentMediaTime() - update.timestamp) * 1000
+                                self.signposter.emitEvent("HandAnchorReceived", "sample_age_ms=\(age, privacy: .public)")
+                            }
                             if anchor.chirality == .left {
-                                self._latestLeftHand = anchor
+                                self._latestLeftHand = update.event == .removed ? nil : anchor
                             } else if anchor.chirality == .right {
-                                self._latestRightHand = anchor
+                                self._latestRightHand = update.event == .removed ? nil : anchor
                             }
                             return true
                         }
@@ -139,6 +163,7 @@ public final class HandTrackingService: HandTrackingServiceProtocol, @unchecked 
             handTracking = nil
             worldTracking = nil
             _isTracking = false
+            handRevision &+= 1
             _latestLeftHand = nil
             _latestRightHand = nil
             return resources
