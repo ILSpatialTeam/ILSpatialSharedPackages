@@ -70,8 +70,10 @@ public final class HandTrackingService: HandTrackingServiceProtocol, @unchecked 
     }
 
     public func start() async throws {
-        guard HandTrackingProvider.isSupported else {
-            logger.warning("Hand tracking not supported on this device.")
+        let canHandTrack = HandTrackingProvider.isSupported
+        let canWorldTrack = WorldTrackingProvider.isSupported
+        guard canHandTrack || canWorldTrack else {
+            logger.warning("Hand and world tracking not supported on this device.")
             return
         }
 
@@ -84,16 +86,18 @@ public final class HandTrackingService: HandTrackingServiceProtocol, @unchecked 
         guard ownsStart else { return }
 
         let newSession = ARKitSession()
-        let newProvider = HandTrackingProvider()
-        let newWorldProvider = WorldTrackingProvider()
+        let newProvider = canHandTrack ? HandTrackingProvider() : nil
+        let newWorldProvider = canWorldTrack ? WorldTrackingProvider() : nil
         do {
-            let authorization = await newSession.requestAuthorization(for: [.handTracking])
-            try Task.checkCancellation()
-            guard authorization.values.allSatisfy({ $0 == .allowed }) else {
-                lock.withLock {
-                    if startGeneration == generation { startGeneration = nil }
+            if canHandTrack {
+                let authorization = await newSession.requestAuthorization(for: [.handTracking])
+                try Task.checkCancellation()
+                guard authorization.values.allSatisfy({ $0 == .allowed }) else {
+                    lock.withLock {
+                        if startGeneration == generation { startGeneration = nil }
+                    }
+                    return
                 }
-                return
             }
             // stop() may have invalidated this start while authorization was open.
             let shouldRun = lock.withLock {
@@ -104,37 +108,43 @@ public final class HandTrackingService: HandTrackingServiceProtocol, @unchecked 
                 return true
             }
             guard shouldRun else { return }
-            try await newSession.run([newProvider, newWorldProvider])
+
+            var providers: [any DataProvider] = []
+            if let newProvider { providers.append(newProvider) }
+            if let newWorldProvider { providers.append(newWorldProvider) }
+            try await newSession.run(providers)
             try Task.checkCancellation()
 
             let installed = lock.withLock {
                 guard startGeneration == generation else { return false }
                 _isTracking = true
-                updateTask = Task { [weak self] in
-                    for await update in newProvider.anchorUpdates {
-                        guard !Task.isCancelled, let self else { break }
-                        let accepted = self.lock.withLock {
-                            guard self.startGeneration == generation else { return false }
-                            self.handRevision &+= 1
-                            let anchor = update.anchor
-                            if self.signposter.isEnabled {
-                                let age = max(0, CACurrentMediaTime() - update.timestamp) * 1000
-                                self.signposter.emitEvent("HandAnchorReceived", "sample_age_ms=\(age, privacy: .public)")
+                if let newProvider {
+                    updateTask = Task { [weak self] in
+                        for await update in newProvider.anchorUpdates {
+                            guard !Task.isCancelled, let self else { break }
+                            let accepted = self.lock.withLock {
+                                guard self.startGeneration == generation else { return false }
+                                self.handRevision &+= 1
+                                let anchor = update.anchor
+                                if self.signposter.isEnabled {
+                                    let age = max(0, CACurrentMediaTime() - update.timestamp) * 1000
+                                    self.signposter.emitEvent("HandAnchorReceived", "sample_age_ms=\(age, privacy: .public)")
+                                }
+                                if anchor.chirality == .left {
+                                    self._latestLeftHand = update.event == .removed ? nil : anchor
+                                } else if anchor.chirality == .right {
+                                    self._latestRightHand = update.event == .removed ? nil : anchor
+                                }
+                                return true
                             }
-                            if anchor.chirality == .left {
-                                self._latestLeftHand = update.event == .removed ? nil : anchor
-                            } else if anchor.chirality == .right {
-                                self._latestRightHand = update.event == .removed ? nil : anchor
-                            }
-                            return true
+                            if !accepted { break }
                         }
-                        if !accepted { break }
                     }
                 }
                 return true
             }
             if installed {
-                logger.info("Hand Tracking Started")
+                logger.info("Hand and World Tracking Started")
             } else {
                 newSession.stop()
             }
